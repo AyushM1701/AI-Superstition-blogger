@@ -1,6 +1,8 @@
 import Link from 'next/link';
 import { getAllPosts } from '../lib/posts';
+import { getReadingTime } from '../lib/reading-time';
 import ReelsPlayer from '../components/ReelsPlayer';
+import ShareButtons from '../components/ShareButtons';
 
 export const revalidate = 3600; // 1 hour ISR
 
@@ -31,16 +33,17 @@ export default async function Home() {
             <h2 className="section-title">✨ Tona Totka of the Day</h2>
             <div className="single-layout">
               <div className="split-blog">
-                <h3 style={{ fontSize: '2.5rem', marginBottom: '1.5rem', color: 'var(--text-primary)', fontFamily: "'Outfit', sans-serif" }}>
+                <h3 style={{ fontSize: '2.5rem', marginBottom: '0.75rem', color: 'var(--text-primary)', fontFamily: "'Outfit', sans-serif" }}>
                   {featuredPost.title}
                 </h3>
+                <span className="reading-time">📖 {getReadingTime(featuredPost.blog_html)}</span>
                 
-                <div className="player-container">
+                <div className="player-container" style={{ marginTop: '1.5rem' }}>
                   <ReelsPlayer 
                     imagePrompts={featuredPost.image_prompts || []} 
                     imageUrls={featuredPost.image_urls}
                     audioUrl={featuredPost.audio_url}
-                    durationInSeconds={35} // Approx duration
+                    durationInSeconds={35}
                   />
                 </div>
 
@@ -54,6 +57,8 @@ export default async function Home() {
                   className="blog-content"
                   dangerouslySetInnerHTML={{ __html: featuredPost.blog_html }}
                 />
+
+                <ShareButtons title={featuredPost.title} slug={featuredPost.slug} />
               </div>
             </div>
           </section>
@@ -86,6 +91,11 @@ export default async function Home() {
           )}
         </>
       )}
+
+      <footer className="site-footer">
+        <p>🔮 <strong>TONA TOTKA.COM</strong> — AI-powered Indian folklore & superstitions.</p>
+        <p>New stories generated daily by artificial intelligence.</p>
+      </footer>
     </main>
   );
 }

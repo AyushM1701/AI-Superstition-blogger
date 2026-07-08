@@ -22,7 +22,8 @@ CRITICAL CONSTRAINTS:
 2. The 'script' field MUST be capped at roughly 80-90 words (designed to be spoken in under 35 seconds).
 3. Do NOT repeat the following recent titles: ${previousTitles.length ? previousTitles.join(', ') : 'None'}.
 4. 'blog_html' should use standard HTML tags (p, h2, h3, ul, li, strong, em). Make the blog post engaging, spooky, but educational, explaining the cultural or historical roots in India.
-5. 'image_prompts' MUST be an array of EXACTLY 4 highly detailed, cinematic, 8k prompts describing a sequential visual storyboard that perfectly captures the superstition's progression. No text or words in the prompts. Ensure subjects look Indian.`;
+5. 'image_prompts' MUST be an array of EXACTLY 4 highly detailed, cinematic, 8k prompts describing a sequential visual storyboard that perfectly captures the superstition's progression. No text or words in the prompts. Ensure subjects look Indian.
+6. IMPORTANT: Do NOT start 'blog_html' with a heading that repeats the title. The title is rendered separately. Start 'blog_html' directly with a <p> tag or a sub-heading like <h3>.`;
 
   const callGemini = async (promptMsg: string) => {
     const ai = getGeminiClient();
@@ -48,7 +49,7 @@ CRITICAL CONSTRAINTS:
     if (!validated.success) {
       // Retry once
       console.warn("Validation failed, retrying once...", validated.error.message);
-      const retryPrompt = `Generate today's AI news blog post. 
+      const retryPrompt = `Generate a captivating blog post about an Indian superstition (Tona Totka). 
 PREVIOUS ATTEMPT FAILED VALIDATION. Ensure it strictly matches the JSON schema. Error: ${validated.error.message}`;
       
       const retryResult = await callGemini(retryPrompt);
