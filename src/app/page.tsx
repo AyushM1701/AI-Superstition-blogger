@@ -17,7 +17,7 @@ export default async function Home() {
   return (
     <main className="container">
       <header className="header">
-        <h1>🔮 TONA TOTKA.COM</h1>
+        <h1><span className="emoji">🔮</span> TONA TOTKA.COM</h1>
         <p>Uncover the truth behind Indian folklore, myths, and superstitions.</p>
       </header>
 
