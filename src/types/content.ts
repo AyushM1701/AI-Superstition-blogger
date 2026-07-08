@@ -2,7 +2,10 @@ import { z } from 'zod';
 
 export const ContentSchema = z.object({
   title: z.string(),
-  body: z.string(),
+  script: z.string(),
+  blog_html: z.string(),
+  tags: z.array(z.string()),
+  image_prompts: z.array(z.string()),
 });
 
 export type Content = z.infer<typeof ContentSchema>;
