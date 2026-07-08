@@ -5,8 +5,8 @@ import ReelsPlayer from '../components/ReelsPlayer';
 export const revalidate = 3600; // 1 hour ISR
 
 function getThumbnailUrl(prompt: string): string {
-  const encodedPrompt = encodeURIComponent(prompt + ", cinematic, highly detailed, 8k, professional photography");
-  return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=640&height=360&nologo=true`;
+  const encodedPrompt = encodeURIComponent(prompt + ", cinematic, highly detailed, professional photography");
+  return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1280&height=720&nologo=true`;
 }
 
 export default async function Home() {
@@ -29,27 +29,27 @@ export default async function Home() {
         <>
           <section>
             <h2 className="section-title">✨ Tona Totka of the Day</h2>
-            <div className="split-layout">
-              {/* Left Side: Interactive Reels Player */}
-              <div className="player-container">
-                <ReelsPlayer 
-                  imagePrompts={featuredPost.image_prompts || []} 
-                  imageUrls={featuredPost.image_urls}
-                  audioUrl={featuredPost.audio_url}
-                  durationInSeconds={35} // Approx duration
-                />
-              </div>
-
-              {/* Right Side: Full Blog Post */}
+            <div className="single-layout">
               <div className="split-blog">
-                <h3 style={{ fontSize: '2rem', marginBottom: '1rem', color: 'var(--text-primary)' }}>
+                <h3 style={{ fontSize: '2.5rem', marginBottom: '1.5rem', color: 'var(--text-primary)', fontFamily: "'Outfit', sans-serif" }}>
                   {featuredPost.title}
                 </h3>
+                
+                <div className="player-container">
+                  <ReelsPlayer 
+                    imagePrompts={featuredPost.image_prompts || []} 
+                    imageUrls={featuredPost.image_urls}
+                    audioUrl={featuredPost.audio_url}
+                    durationInSeconds={35} // Approx duration
+                  />
+                </div>
+
                 <div className="tags" style={{ marginBottom: '2rem' }}>
                   {featuredPost.tags && featuredPost.tags.map(tag => (
                     <span key={tag} className="tag">{tag}</span>
                   ))}
                 </div>
+                
                 <div 
                   className="blog-content"
                   dangerouslySetInnerHTML={{ __html: featuredPost.blog_html }}

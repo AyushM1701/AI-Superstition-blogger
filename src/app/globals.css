@@ -33,15 +33,14 @@ body {
 .reels-player {
   position: relative;
   width: 100%;
-  max-width: 400px; /* Mobile width */
-  aspect-ratio: 9/16;
+  aspect-ratio: 16/9;
   background-color: #000;
   border-radius: 16px;
   overflow: hidden;
   cursor: pointer;
   box-shadow: var(--glow-shadow);
   border: 1px solid var(--accent-color);
-  margin: 0 auto;
+  margin: 0 auto 2rem;
 }
 
 .reels-viewport {
@@ -130,13 +129,11 @@ body {
   border-radius: 2px;
 }
 
-/* Split Layout for Tona Totka of the Day */
-.split-layout {
-  display: grid;
-  grid-template-columns: 400px 1fr;
-  gap: 3rem;
+.single-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
   margin-bottom: 4rem;
-  align-items: start;
 }
 
 .split-blog {
@@ -160,9 +157,8 @@ body {
 }
 
 @media (max-width: 1024px) {
-  .split-layout {
-    grid-template-columns: 1fr;
-    gap: 2rem;
+  .split-blog {
+    padding: 2rem;
   }
 }
 

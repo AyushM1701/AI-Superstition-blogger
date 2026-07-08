@@ -49,7 +49,7 @@ async function generateDaily() {
     for (let i = 0; i < content.image_prompts.length; i++) {
       const prompt = content.image_prompts[i];
       const encodedPrompt = encodeURIComponent(prompt + ", cinematic, highly detailed, 8k, professional photography");
-      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1080&height=1920&nologo=true`;
+      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1920&height=1080&nologo=true`;
       
       try {
         const response = await fetch(pollinationsUrl);
