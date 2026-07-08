@@ -1,14 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;800&family=Outfit:wght@400;600;800&display=swap');
 
 :root {
-  --bg-color: #0f172a;
-  --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --card-bg: rgba(30, 41, 59, 0.7);
-  --card-border: rgba(255, 255, 255, 0.1);
-  --accent-color: #3b82f6;
-  --accent-hover: #60a5fa;
-  --accent-gradient: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+  --bg-color: #05050a; /* Deep mystical dark */
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1; /* Softer for reading */
+  --card-bg: rgba(23, 20, 33, 0.6);
+  --card-border: rgba(139, 92, 246, 0.15); /* Subtle purple */
+  --accent-color: #a78bfa;
+  --accent-hover: #c4b5fd;
+  --accent-gradient: linear-gradient(135deg, #a78bfa 0%, #f472b6 100%);
 }
 
 * {
@@ -20,9 +20,12 @@
 body {
   background-color: var(--bg-color);
   color: var(--text-primary);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  line-height: 1.6;
-  background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, transparent 50%);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  line-height: 1.8;
+  background-image: 
+    radial-gradient(circle at 15% 0%, rgba(46, 16, 101, 0.4) 0%, transparent 40%),
+    radial-gradient(circle at 85% 100%, rgba(139, 92, 246, 0.1) 0%, transparent 40%);
+  background-attachment: fixed;
   min-height: 100vh;
 }
 
@@ -138,10 +141,12 @@ body {
 
 .split-blog {
   background: var(--card-bg);
-  padding: 2.5rem;
-  border-radius: 16px;
+  padding: 3.5rem; /* Much more breathing room */
+  border-radius: 20px;
   border: 1px solid var(--card-border);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
 }
 
 .section-title {
@@ -337,32 +342,38 @@ a {
 
 .blog-content {
   font-size: 1.125rem;
-  color: var(--text-primary);
+  color: var(--text-secondary); /* Softer text color for reading */
 }
 
 .blog-content p {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.8rem;
+  letter-spacing: 0.01em;
 }
 
 .blog-content h2 {
-  font-size: 2rem;
-  margin-top: 2.5rem;
-  color: #fff;
+  font-size: 1.8rem;
+  margin-top: 3.5rem;
+  margin-bottom: 1.25rem;
+  color: var(--accent-hover);
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: -0.02em;
 }
 
 .blog-content h3 {
-  font-size: 1.5rem;
-  margin-top: 2rem;
-  color: #e2e8f0;
+  font-size: 1.4rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  color: var(--text-primary);
+  font-family: 'Outfit', sans-serif;
 }
 
 .blog-content ul, .blog-content ol {
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.8rem;
   padding-left: 1.5rem;
 }
 
 .blog-content li {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.75rem;
 }
 
 .blog-content a {
