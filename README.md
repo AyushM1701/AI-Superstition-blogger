@@ -4,7 +4,7 @@ An automated, AI-powered platform uncovering the truth behind Indian folklore, m
 
 This application is built with **Next.js 15 (App Router)** and features a fully automated content pipeline. Every day, the system leverages AI to generate an original blog post about an Indian superstition ("Tona Totka"), complete with an interactive multimedia reading experience.
 
-![Tona Totka Web Preview](public/preview-placeholder.jpg) *(Make sure to add a real preview image to `public/` later!)*
+
 
 ## ✨ Features
 
