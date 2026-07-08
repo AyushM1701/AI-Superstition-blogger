@@ -22,7 +22,7 @@ This application is built with **Next.js 15 (App Router)** and features a fully 
 - **Styling:** Vanilla CSS (Glassmorphic dark aesthetic)
 - **AI Text:** `@google/genai` (Gemini 2.5 Flash)
 - **AI Images:** Pollinations AI (Free API)
-- **AI Audio:** `@google-cloud/text-to-speech`
+- **AI Audio:** `google-tts-api` (Google Translate TTS)
 - **Deployment:** Vercel
 - **Automation:** GitHub Actions
 
@@ -48,7 +48,7 @@ You will need Node.js installed, as well as API keys for Gemini and Google Cloud
    ```bash
    cp .env.example .env.local
    ```
-   *Note: Ensure `GOOGLE_APPLICATION_CREDENTIALS_JSON` contains your minified GCP Service Account JSON for TTS.*
+    *Note: You only need `GEMINI_API_KEY` for content generation. TTS uses the free Google Translate API.*
 
 4. Run the development server:
    ```bash
@@ -75,6 +75,7 @@ The content is generated entirely without human intervention!
 - `npm run dev`: Starts local development server.
 - `npm run build`: Builds the static site for production.
 - `npm run generate`: Triggers the AI pipeline to create a single new post and save it locally.
+- `npm run lint`: Runs ESLint across the project.
 
 ## 🤝 Contributing
 

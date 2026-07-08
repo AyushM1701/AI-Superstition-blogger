@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { getAllPosts } from '../lib/posts';
-import { getReadingTime } from '../lib/reading-time';
+import { getReadingTime, stripLeadingTitle } from '../lib/reading-time';
 import ReelsPlayer from '../components/ReelsPlayer';
 import ShareButtons from '../components/ShareButtons';
 
@@ -55,7 +55,7 @@ export default async function Home() {
                 
                 <div 
                   className="blog-content"
-                  dangerouslySetInnerHTML={{ __html: featuredPost.blog_html }}
+                  dangerouslySetInnerHTML={{ __html: stripLeadingTitle(featuredPost.blog_html, featuredPost.title) }}
                 />
 
                 <ShareButtons title={featuredPost.title} slug={featuredPost.slug} />

@@ -2,7 +2,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getPostBySlug, getAllPosts } from '../../lib/posts';
-import { getReadingTime } from '../../lib/reading-time';
+import { getReadingTime, stripLeadingTitle } from '../../lib/reading-time';
 import ReelsPlayer from '../../components/ReelsPlayer';
 import ShareButtons from '../../components/ShareButtons';
 
@@ -45,6 +45,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
+function getThumbnailUrl(prompt: string): string {
+  const encodedPrompt = encodeURIComponent(prompt + ", cinematic, highly detailed, professional photography");
+  return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1280&height=720&nologo=true`;
+}
+
 export default async function PostPage({ params }: Props) {
   const resolvedParams = await params;
   const post = getPostBySlug(resolvedParams.slug);
@@ -52,6 +57,10 @@ export default async function PostPage({ params }: Props) {
   if (!post) {
     notFound();
   }
+
+  // Get related posts (exclude current post, take up to 3)
+  const allPosts = getAllPosts();
+  const relatedPosts = allPosts.filter(p => p.slug !== post.slug).slice(0, 3);
 
   return (
     <main className="detail-container">
@@ -62,8 +71,8 @@ export default async function PostPage({ params }: Props) {
       <article>
         <header className="detail-header">
           <h1 className="detail-title">{post.title}</h1>
-          <div className="detail-meta">
-            <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
+          <div className="detail-meta" style={{ flexDirection: 'column', alignItems: 'flex-start', gap: '0.75rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
               <time dateTime={post.created_at}>
                 {new Date(post.created_at).toLocaleDateString('en-US', {
                   year: 'numeric',
@@ -71,6 +80,7 @@ export default async function PostPage({ params }: Props) {
                   day: 'numeric'
                 })}
               </time>
+              <span style={{ color: 'var(--card-border)' }}>•</span>
               <span className="reading-time">📖 {getReadingTime(post.blog_html)}</span>
             </div>
             <div className="tags">
@@ -92,11 +102,38 @@ export default async function PostPage({ params }: Props) {
 
         <div 
           className="blog-content"
-          dangerouslySetInnerHTML={{ __html: post.blog_html }}
+          dangerouslySetInnerHTML={{ __html: stripLeadingTitle(post.blog_html, post.title) }}
         />
 
         <ShareButtons title={post.title} slug={post.slug} />
       </article>
+
+      {relatedPosts.length > 0 && (
+        <section style={{ marginTop: '4rem' }}>
+          <h2 className="section-title">🔮 More Tona Totkas</h2>
+          <div className="video-grid">
+            {relatedPosts.map((relPost) => (
+              <Link href={`/${relPost.slug}`} key={relPost.slug} className="video-card">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={relPost.image_urls?.[0] || getThumbnailUrl(relPost.image_prompts?.[0] || relPost.title)}
+                  alt={relPost.title}
+                  className="thumbnail-image"
+                  loading="lazy"
+                />
+                <div className="card-content">
+                  <h2 className="card-title">{relPost.title}</h2>
+                  <div className="tags">
+                    {relPost.tags && relPost.tags.slice(0, 3).map((tag: string) => (
+                      <span key={tag} className="tag">{tag}</span>
+                    ))}
+                  </div>
+                </div>
+              </Link>
+            ))}
+          </div>
+        </section>
+      )}
 
       <footer className="site-footer">
         <p>🔮 <strong>TONA TOTKA.COM</strong> — AI-powered Indian folklore & superstitions.</p>
