@@ -13,8 +13,23 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AI Superstition Blogger | Daily Automated Folklore & Myths",
-  description: "Explore fascinating superstitions, folklore, and myths from around the world — fully automated with AI-generated content and cinematic video.",
+  title: "TONA TOTKA.COM",
+  description: "Uncover the world's most fascinating Indian superstitions, myths, and folklore.",
+  openGraph: {
+    title: "TONA TOTKA.COM",
+    description: "Uncover the world's most fascinating Indian superstitions, myths, and folklore.",
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://tona-totka.com',
+    siteName: "TONA TOTKA.COM",
+    images: [
+      {
+        url: "https://image.pollinations.ai/prompt/Indian%20superstition%20mystery%20dark%20magic%20cinematic%208k?width=1200&height=630&nologo=true",
+        width: 1200,
+        height: 630,
+      }
+    ],
+    locale: 'en_IN',
+    type: 'website',
+  }
 };
 
 export default function RootLayout({

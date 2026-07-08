@@ -1,41 +1,19 @@
-import { GoogleGenAI } from '@google/genai';
-
-const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY });
+import * as googleTTS from 'google-tts-api';
 
 export async function generateAudio(script: string): Promise<Buffer> {
-  const response = await ai.models.generateContent({
-    model: 'gemini-2.5-flash',
-    contents: [
-      {
-        role: 'user',
-        parts: [{ text: script }]
-      }
-    ],
-    config: {
-      responseModalities: ['AUDIO'],
-      speechConfig: {
-        voiceConfig: {
-          prebuiltVoiceConfig: {
-            voiceName: 'Kore'
-          }
-        }
-      }
-    }
-  });
+  try {
+    // Generate base64 audio string (split if > 200 chars to bypass limit)
+    const results = await googleTTS.getAllAudioBase64(script, {
+      lang: 'en', // English
+      slow: false,
+      host: 'https://translate.google.com',
+      timeout: 10000,
+    });
 
-  // Extract inline audio data from the response
-  const candidate = response.candidates?.[0];
-  if (!candidate?.content?.parts) {
-    throw new Error('No audio parts returned from Gemini TTS');
+    // Combine base64 chunks into a single Buffer
+    const buffers = results.map((res) => Buffer.from(res.base64, 'base64'));
+    return Buffer.concat(buffers);
+  } catch (error: any) {
+    throw new Error(`Failed to generate Google TTS audio: ${error.message}`);
   }
-
-  for (const part of candidate.content.parts) {
-    if (part.inlineData && part.inlineData.mimeType?.startsWith('audio/')) {
-      const base64Audio = part.inlineData.data;
-      if (!base64Audio) throw new Error('Empty audio data from Gemini TTS');
-      return Buffer.from(base64Audio, 'base64');
-    }
-  }
-
-  throw new Error('No audio data found in Gemini TTS response');
 }

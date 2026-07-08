@@ -20,12 +20,145 @@
 body {
   background-color: var(--bg-color);
   color: var(--text-primary);
-  font-family: 'Inter', sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
   line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
+  background-image: radial-gradient(circle at 50% 0%, #1e1b4b 0%, transparent 50%);
   min-height: 100vh;
+}
+
+/* Reels Player Component */
+.reels-player {
+  position: relative;
+  width: 100%;
+  max-width: 400px; /* Mobile width */
+  aspect-ratio: 9/16;
+  background-color: #000;
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  box-shadow: var(--glow-shadow);
+  border: 1px solid var(--accent-color);
+  margin: 0 auto;
+}
+
+.reels-viewport {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.reels-slide {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  transition: opacity 0.5s ease-in-out;
+}
+
+.reels-slide img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform-origin: center center;
+}
+
+.ken-burns-active {
+  animation: kenBurns 10s ease-out forwards;
+}
+
+@keyframes kenBurns {
+  0% { transform: scale(1); }
+  100% { transform: scale(1.15); }
+}
+
+.reels-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 20;
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
+  padding: 1rem;
+  background: linear-gradient(to bottom, rgba(0,0,0,0.4) 0%, transparent 20%, transparent 80%, rgba(0,0,0,0.6) 100%);
+}
+
+.play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60px;
+  height: 60px;
+  background: rgba(251, 191, 36, 0.8); /* Gold transparent */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.5rem;
+  color: #0f0a1f;
+  backdrop-filter: blur(4px);
+  box-shadow: 0 0 20px rgba(251, 191, 36, 0.5);
+}
+
+.progress-bar-container {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+  margin-top: 4px;
+}
+
+.progress-segment {
+  flex: 1;
+  height: 3px;
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: var(--accent-color);
+  border-radius: 2px;
+}
+
+/* Split Layout for Tona Totka of the Day */
+.split-layout {
+  display: grid;
+  grid-template-columns: 400px 1fr;
+  gap: 3rem;
+  margin-bottom: 4rem;
+  align-items: start;
+}
+
+.split-blog {
+  background: var(--card-bg);
+  padding: 2.5rem;
+  border-radius: 16px;
+  border: 1px solid var(--card-border);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.2);
+}
+
+.section-title {
+  font-size: 2rem;
+  color: var(--accent-color);
+  margin-bottom: 2rem;
+  text-align: center;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  text-shadow: 0 0 10px rgba(251, 191, 36, 0.3);
+}
+
+@media (max-width: 1024px) {
+  .split-layout {
+    grid-template-columns: 1fr;
+    gap: 2rem;
+  }
 }
 
 /* Typography */
