@@ -18,7 +18,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "TONA TOTKA.COM",
     description: "Uncover the world's most fascinating Indian superstitions, myths, and folklore.",
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://tona-totka.com',
+    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-superstition-blogger-4nnb.vercel.app',
     siteName: "TONA TOTKA.COM",
     images: [
       {
