@@ -52,18 +52,19 @@ async function generateDaily() {
       const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1920&height=1080&nologo=true`;
       
       try {
+        console.log(`Waiting 10s before downloading image ${i+1} to respect Pollinations rate limits...`);
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        
         const response = await fetch(pollinationsUrl);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-        const imageBuffer = await response.arrayBuffer();
         
-        const imageFilename = `${i + 1}.jpg`;
-        const imagePath = path.join(publicImagesDir, imageFilename);
-        fs.writeFileSync(imagePath, Buffer.from(imageBuffer));
-        
-        imageUrls.push(`/images/${slug}/${imageFilename}`);
-        console.log(`  Saved image ${i + 1}/4`);
-      } catch (err) {
-        console.error(`  Failed to fetch image ${i + 1}, fallback to direct URL`, err);
+        const buffer = await response.arrayBuffer();
+        const localPath = path.join(publicImagesDir, `${i + 1}.jpg`);
+        fs.writeFileSync(localPath, Buffer.from(buffer));
+        imageUrls.push(`/images/${slug}/${i + 1}.jpg`);
+        console.log(`✅ Downloaded image ${i + 1}`);
+      } catch (error) {
+        console.error(`⚠️ Failed to download image ${i + 1}:`, error instanceof Error ? error.message : String(error));
         imageUrls.push(pollinationsUrl); // Fallback to remote URL if download fails
       }
     }
