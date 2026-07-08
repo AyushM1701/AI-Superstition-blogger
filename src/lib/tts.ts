@@ -13,7 +13,8 @@ export async function generateAudio(script: string): Promise<Buffer> {
     // Combine base64 chunks into a single Buffer
     const buffers = results.map((res) => Buffer.from(res.base64, 'base64'));
     return Buffer.concat(buffers);
-  } catch (error: any) {
-    throw new Error(`Failed to generate Google TTS audio: ${error.message}`);
+  } catch (error) {
+    console.error('TTS Generation Error:', error);
+    throw new Error(`Failed to generate TTS: ${error instanceof Error ? error.message : String(error)}`);
   }
 }

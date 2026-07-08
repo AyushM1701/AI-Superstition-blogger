@@ -66,7 +66,8 @@ PREVIOUS ATTEMPT FAILED VALIDATION. Ensure it strictly matches the JSON schema. 
     finalData.blog_html = sanitizeContent(finalData.blog_html);
     
     return finalData;
-  } catch (error: any) {
-    throw new Error(`Failed to generate content: ${error.message}`);
+  } catch (error) {
+    console.error('Gemini Generation Error:', error);
+    throw new Error(`Failed to generate script: ${error instanceof Error ? error.message : String(error)}`);
   }
 }

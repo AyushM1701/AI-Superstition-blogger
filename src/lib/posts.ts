@@ -36,7 +36,7 @@ export function getAllPosts(): Post[] {
           slug,
           ...postData
         } as Post;
-      } catch (e) {
+      } catch {
         console.error(`Error parsing JSON in file ${fileName}`);
         return null;
       }
@@ -67,7 +67,7 @@ export function getPostBySlug(slug: string): Post | null {
       slug,
       ...postData
     } as Post;
-  } catch (e) {
+  } catch {
     console.error(`Error parsing JSON in file ${slug}.json`);
     return null;
   }

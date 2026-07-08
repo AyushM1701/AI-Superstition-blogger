@@ -86,8 +86,8 @@ async function generateDaily() {
 
     console.log(`✅ Success! Post saved to ${postPath}`);
 
-  } catch (error: any) {
-    console.error('❌ Failed to generate daily content:', error.message);
+  } catch (error) {
+    console.error('❌ Failed to generate daily content:', error instanceof Error ? error.message : String(error));
     process.exit(1);
   }
 }
