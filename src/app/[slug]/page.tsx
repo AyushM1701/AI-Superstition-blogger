@@ -96,6 +96,7 @@ export default async function PostPage({ params }: Props) {
             imagePrompts={post.image_prompts || []} 
             imageUrls={post.image_urls}
             audioUrl={post.audio_url}
+            script={post.script}
             durationInSeconds={35}
           />
         </div>

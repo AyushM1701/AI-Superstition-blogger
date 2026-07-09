@@ -43,6 +43,7 @@ export default async function Home() {
                     imagePrompts={featuredPost.image_prompts || []} 
                     imageUrls={featuredPost.image_urls}
                     audioUrl={featuredPost.audio_url}
+                    script={featuredPost.script}
                     durationInSeconds={35}
                   />
                 </div>

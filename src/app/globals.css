@@ -65,16 +65,86 @@ body {
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+/* Ken Burns Variations */
+.kb-zoom-in {
   transform-origin: center center;
+  animation: kbZoomIn 10s ease-out forwards;
+}
+.kb-pan-left {
+  transform-origin: center center;
+  animation: kbPanLeft 10s ease-out forwards;
+}
+.kb-pan-right {
+  transform-origin: center center;
+  animation: kbPanRight 10s ease-out forwards;
+}
+.kb-zoom-out {
+  transform-origin: center center;
+  animation: kbZoomOut 10s ease-out forwards;
+}
+.kb-pan-up {
+  transform-origin: center center;
+  animation: kbPanUp 10s ease-out forwards;
 }
 
-.ken-burns-active {
-  animation: kenBurns 10s ease-out forwards;
-}
-
-@keyframes kenBurns {
+@keyframes kbZoomIn {
   0% { transform: scale(1); }
-  100% { transform: scale(1.15); }
+  100% { transform: scale(1.18); }
+}
+@keyframes kbPanLeft {
+  0% { transform: scale(1.15) translateX(3%); }
+  100% { transform: scale(1.15) translateX(-3%); }
+}
+@keyframes kbPanRight {
+  0% { transform: scale(1.15) translateX(-3%); }
+  100% { transform: scale(1.15) translateX(3%); }
+}
+@keyframes kbZoomOut {
+  0% { transform: scale(1.2); }
+  100% { transform: scale(1); }
+}
+@keyframes kbPanUp {
+  0% { transform: scale(1.15) translateY(3%); }
+  100% { transform: scale(1.15) translateY(-3%); }
+}
+
+/* Video Subtitles */
+.reels-subtitle {
+  position: absolute;
+  bottom: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 25;
+  max-width: 85%;
+  text-align: center;
+  padding: 0.6rem 1.2rem;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border-radius: 8px;
+  color: #f1f5f9;
+  font-size: 0.95rem;
+  font-weight: 500;
+  line-height: 1.5;
+  letter-spacing: 0.01em;
+  animation: subtitleFadeIn 0.4s ease-out;
+  pointer-events: none;
+}
+
+@keyframes subtitleFadeIn {
+  0% { opacity: 0; transform: translateX(-50%) translateY(8px); }
+  100% { opacity: 1; transform: translateX(-50%) translateY(0); }
+}
+
+@media (max-width: 768px) {
+  .reels-subtitle {
+    font-size: 0.75rem;
+    padding: 0.4rem 0.8rem;
+    bottom: 1.5rem;
+    max-width: 90%;
+  }
 }
 
 .reels-overlay {

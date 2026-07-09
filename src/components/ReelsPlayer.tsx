@@ -1,15 +1,48 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
 
 interface ReelsPlayerProps {
   imagePrompts?: string[];
   imageUrls?: string[];
   audioUrl?: string;
+  script?: string; // Narration text for synced subtitles
   durationInSeconds?: number; // Fallback only — audio duration takes priority
 }
 
-export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, durationInSeconds = 30 }: ReelsPlayerProps) {
+// Ken Burns effect variations — cycles through these per image
+const KB_EFFECTS = ['kb-zoom-in', 'kb-pan-left', 'kb-pan-right', 'kb-zoom-out', 'kb-pan-up'];
+
+/**
+ * Splits a script into N roughly-equal subtitle segments at sentence boundaries.
+ */
+function splitIntoSegments(text: string, count: number): string[] {
+  if (!text || count <= 0) return [];
+  
+  // Split by sentence-ending punctuation
+  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
+  
+  if (sentences.length <= count) {
+    // Fewer sentences than segments — pad with empty strings
+    const result = sentences.map(s => s.trim());
+    while (result.length < count) result.push('');
+    return result;
+  }
+  
+  // Distribute sentences evenly across segments
+  const segments: string[] = [];
+  const perSegment = Math.ceil(sentences.length / count);
+  
+  for (let i = 0; i < count; i++) {
+    const start = i * perSegment;
+    const end = Math.min(start + perSegment, sentences.length);
+    segments.push(sentences.slice(start, end).join(' ').trim());
+  }
+  
+  return segments;
+}
+
+export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, script, durationInSeconds = 30 }: ReelsPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [audioDuration, setAudioDuration] = useState<number | null>(null);
@@ -18,7 +51,7 @@ export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, duratio
 
   const getImageUrl = (promptOrUrl: string, isUrl: boolean) => {
     if (isUrl) return promptOrUrl;
-    const encodedPrompt = encodeURIComponent(promptOrUrl + ", cinematic, highly detailed, 8k, professional photography");
+    const encodedPrompt = encodeURIComponent(promptOrUrl + ", cinematic lighting, shallow depth of field, 35mm film grain, award-winning National Geographic photography, volumetric light");
     return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1920&height=1080&nologo=true`;
   };
 
@@ -28,6 +61,11 @@ export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, duratio
   // Use actual audio duration when available, otherwise fall back to prop
   const effectiveDuration = audioDuration ?? durationInSeconds;
   const timePerImage = itemsCount > 0 ? (effectiveDuration / itemsCount) * 1000 : 0;
+
+  // Pre-compute subtitle segments from script
+  const subtitles = useMemo(() => {
+    return script ? splitIntoSegments(script, itemsCount) : [];
+  }, [script, itemsCount]);
 
   // Detect actual audio duration once metadata loads
   useEffect(() => {
@@ -77,7 +115,6 @@ export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, duratio
       intervalRef.current = setInterval(() => {
         setCurrentIndex((prevIndex) => {
           if (prevIndex >= itemsCount - 1) {
-            // Last image reached — let audio keep playing until it ends naturally
             clearInterval(intervalRef.current!);
             return prevIndex; // Stay on last image
           }
@@ -104,6 +141,9 @@ export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, duratio
 
   if (itemsCount === 0) return null;
 
+  // Pick a Ken Burns effect for each image (deterministic per index)
+  const getKbEffect = (index: number) => KB_EFFECTS[index % KB_EFFECTS.length];
+
   return (
     <div className="reels-player" onClick={togglePlay}>
       {audioUrl && <audio ref={audioRef} src={audioUrl} preload="auto" />}
@@ -118,19 +158,26 @@ export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, duratio
               style={{ 
                 opacity: index === currentIndex ? 1 : 0,
                 zIndex: index === currentIndex ? 10 : 1,
-                animationDuration: `${timePerImage / 1000}s`
               }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src={src} 
-                alt="Generated scene" 
-                className={isPlaying && index === currentIndex ? 'ken-burns-active' : ''}
+                alt={`Scene ${index + 1}`}
+                className={isPlaying && index === currentIndex ? getKbEffect(index) : ''}
+                style={{ animationDuration: `${timePerImage / 1000}s` }}
               />
             </div>
           );
         })}
       </div>
+
+      {/* Synced Subtitles */}
+      {isPlaying && subtitles[currentIndex] && (
+        <div className="reels-subtitle" key={currentIndex}>
+          {subtitles[currentIndex]}
+        </div>
+      )}
 
       <div className="reels-overlay">
         {!isPlaying && (

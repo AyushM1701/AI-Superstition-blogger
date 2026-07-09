@@ -12,7 +12,7 @@ async function generateDaily() {
 
   try {
     const previousPosts = getAllPosts();
-    const previousTitles = previousPosts.map(p => p.title).slice(0, 10);
+    const previousTitles = previousPosts.map(p => p.title);
 
     console.log('🧠 1. Calling Gemini to generate a superstition story...');
     const content = await generateContent(previousTitles);
@@ -48,7 +48,7 @@ async function generateDaily() {
     const imageUrls: string[] = [];
     for (let i = 0; i < content.image_prompts.length; i++) {
       const prompt = content.image_prompts[i];
-      const encodedPrompt = encodeURIComponent(prompt + ", cinematic, highly detailed, 8k, professional photography");
+      const encodedPrompt = encodeURIComponent(prompt + ", cinematic lighting, shallow depth of field, 35mm film grain, award-winning National Geographic photography, volumetric light");
       const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1920&height=1080&nologo=true`;
       
       try {

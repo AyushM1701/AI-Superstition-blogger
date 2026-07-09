@@ -5,7 +5,7 @@ export const ContentSchema = z.object({
   script: z.string(),
   blog_html: z.string(),
   tags: z.array(z.string()),
-  image_prompts: z.array(z.string()).length(4),
+  image_prompts: z.array(z.string()).length(5),
 });
 
 export type Content = z.infer<typeof ContentSchema>;
