@@ -1,88 +1,57 @@
 'use client';
 
-import { useState, useRef, useEffect, useCallback, useMemo } from 'react';
+import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
+import { buildImagePrompt } from '../lib/image-style';
 
 interface ReelsPlayerProps {
   imagePrompts?: string[];
   imageUrls?: string[];
   audioUrl?: string;
-  script?: string; // Narration text for synced subtitles
-  durationInSeconds?: number; // Fallback only — audio duration takes priority
+  script?: string;
+  durationInSeconds?: number;
 }
 
-// Ken Burns effect variations — cycles through these per image
 const KB_EFFECTS = ['kb-zoom-in', 'kb-pan-left', 'kb-pan-right', 'kb-zoom-out', 'kb-pan-up'];
-
-/**
- * Splits a script into N roughly-equal subtitle segments at sentence boundaries.
- */
-function splitIntoSegments(text: string, count: number): string[] {
-  if (!text || count <= 0) return [];
-  
-  // Split by sentence-ending punctuation
-  const sentences = text.match(/[^.!?]+[.!?]+/g) || [text];
-  
-  if (sentences.length <= count) {
-    // Fewer sentences than segments — pad with empty strings
-    const result = sentences.map(s => s.trim());
-    while (result.length < count) result.push('');
-    return result;
-  }
-  
-  // Distribute sentences evenly across segments
-  const segments: string[] = [];
-  const perSegment = Math.ceil(sentences.length / count);
-  
-  for (let i = 0; i < count; i++) {
-    const start = i * perSegment;
-    const end = Math.min(start + perSegment, sentences.length);
-    segments.push(sentences.slice(start, end).join(' ').trim());
-  }
-  
-  return segments;
-}
 
 export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, script, durationInSeconds = 30 }: ReelsPlayerProps) {
   const [isPlaying, setIsPlaying] = useState(false);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const [slideProgress, setSlideProgress] = useState(0); // 0–1 within current slide
   const [audioDuration, setAudioDuration] = useState<number | null>(null);
+  
+  // Expose elapsed time so we can sync subtitles correctly even during fallback
+  const [currentElapsed, setCurrentElapsed] = useState(0);
+  
   const audioRef = useRef<HTMLAudioElement>(null);
-  const intervalRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Fallback (no-audio) pausable timer state
+  const fallbackElapsedRef = useRef(0);
+  const fallbackStartRef = useRef<number | null>(null);
+  const fallbackRafRef = useRef<number | null>(null);
 
   const getImageUrl = (promptOrUrl: string, isUrl: boolean) => {
     if (isUrl) return promptOrUrl;
-    const encodedPrompt = encodeURIComponent(promptOrUrl + ", cinematic lighting, shallow depth of field, 35mm film grain, award-winning National Geographic photography, volumetric light");
-    return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1920&height=1080&nologo=true`;
+    return `https://image.pollinations.ai/prompt/${encodeURIComponent(buildImagePrompt(promptOrUrl))}?width=1920&height=1080&nologo=true`;
   };
 
   const hasStaticUrls = !!imageUrls && imageUrls.length > 0;
   const itemsCount = hasStaticUrls ? imageUrls.length : (imagePrompts?.length || 0);
-
-  // Use actual audio duration when available, otherwise fall back to prop
   const effectiveDuration = audioDuration ?? durationInSeconds;
-  const timePerImage = itemsCount > 0 ? (effectiveDuration / itemsCount) * 1000 : 0;
+  const timePerImage = itemsCount > 0 ? effectiveDuration / itemsCount : 0; // seconds
 
-  // Pre-compute subtitle segments from script
-  const subtitles = useMemo(() => {
-    return script ? splitIntoSegments(script, itemsCount) : [];
-  }, [script, itemsCount]);
+  const allSentences = useMemo(() => {
+    if (!script) return [];
+    return script.match(/[^.!?]+[.!?]+/g) || [script];
+  }, [script]);
 
-  // Detect actual audio duration once metadata loads
   useEffect(() => {
+    setAudioDuration(null);
     const audio = audioRef.current;
     if (!audio) return;
-
     const handleLoadedMetadata = () => {
-      if (audio.duration && isFinite(audio.duration)) {
-        setAudioDuration(audio.duration);
-      }
+      if (audio.duration && isFinite(audio.duration)) setAudioDuration(audio.duration);
     };
-
-    // In case metadata is already loaded
-    if (audio.duration && isFinite(audio.duration)) {
-      setAudioDuration(audio.duration);
-    }
-
+    if (audio.duration && isFinite(audio.duration)) setAudioDuration(audio.duration);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     return () => audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
   }, [audioUrl]);
@@ -90,7 +59,11 @@ export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, script,
   const stopPlayback = useCallback(() => {
     setIsPlaying(false);
     setCurrentIndex(0);
-    if (intervalRef.current) clearInterval(intervalRef.current);
+    setSlideProgress(0);
+    setCurrentElapsed(0);
+    fallbackElapsedRef.current = 0;
+    fallbackStartRef.current = null;
+    if (fallbackRafRef.current) cancelAnimationFrame(fallbackRafRef.current);
     if (audioRef.current) {
       audioRef.current.pause();
       audioRef.current.currentTime = 0;
@@ -98,42 +71,78 @@ export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, script,
   }, []);
 
   const togglePlay = () => {
-    if (audioRef.current && itemsCount > 0) {
+    if (itemsCount === 0) return;
+    if (audioUrl && audioRef.current) {
       if (isPlaying) {
         audioRef.current.pause();
-        if (intervalRef.current) clearInterval(intervalRef.current);
+        setIsPlaying(false);
       } else {
-        audioRef.current.play();
+        audioRef.current.play()
+          .then(() => setIsPlaying(true))
+          .catch(e => console.error('Audio play failed:', e));
       }
-      setIsPlaying(!isPlaying);
+    } else {
+      setIsPlaying(prev => !prev);
     }
   };
 
-  // Image slideshow driven by audio duration
+  // --- Audio-driven sync: single source of truth is audio.currentTime ---
   useEffect(() => {
-    if (isPlaying && itemsCount > 0 && timePerImage > 0) {
-      intervalRef.current = setInterval(() => {
-        setCurrentIndex((prevIndex) => {
-          if (prevIndex >= itemsCount - 1) {
-            clearInterval(intervalRef.current!);
-            return prevIndex; // Stay on last image
-          }
-          return prevIndex + 1;
-        });
-      }, timePerImage);
-    } else {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    }
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current);
-    };
-  }, [isPlaying, itemsCount, timePerImage]);
+    const audio = audioRef.current;
+    if (!audio || !audioUrl || timePerImage <= 0) return;
 
-  // Audio ended = everything resets
+    const handleTimeUpdate = () => {
+      const currentTime = audio.currentTime;
+      setCurrentElapsed(currentTime);
+      const raw = currentTime / timePerImage;
+      const idx = Math.min(itemsCount - 1, Math.floor(raw));
+      setCurrentIndex(idx);
+      setSlideProgress(Math.min(1, raw - idx));
+    };
+    audio.addEventListener('timeupdate', handleTimeUpdate);
+    return () => audio.removeEventListener('timeupdate', handleTimeUpdate);
+  }, [audioUrl, itemsCount, timePerImage]);
+
+  // --- Fallback (no audio track): pausable rAF timer, doesn't reset on pause ---
+  useEffect(() => {
+    if (audioUrl || !isPlaying || itemsCount === 0 || timePerImage <= 0) {
+      if (fallbackRafRef.current) cancelAnimationFrame(fallbackRafRef.current);
+      return;
+    }
+    fallbackStartRef.current = performance.now();
+    const totalMs = effectiveDuration * 1000;
+
+    const tick = (now: number) => {
+      const elapsed = fallbackElapsedRef.current + (now - (fallbackStartRef.current ?? now));
+      if (elapsed >= totalMs) {
+        setCurrentElapsed(effectiveDuration);
+        setCurrentIndex(itemsCount - 1);
+        setSlideProgress(1);
+        return;
+      }
+      
+      const elapsedSec = elapsed / 1000;
+      setCurrentElapsed(elapsedSec);
+      
+      const raw = elapsedSec / timePerImage;
+      const idx = Math.min(itemsCount - 1, Math.floor(raw));
+      setCurrentIndex(idx);
+      setSlideProgress(Math.min(1, raw - idx));
+      fallbackRafRef.current = requestAnimationFrame(tick);
+    };
+    fallbackRafRef.current = requestAnimationFrame(tick);
+
+    return () => {
+      if (fallbackRafRef.current) cancelAnimationFrame(fallbackRafRef.current);
+      if (fallbackStartRef.current) {
+        fallbackElapsedRef.current += performance.now() - fallbackStartRef.current;
+      }
+    };
+  }, [audioUrl, isPlaying, itemsCount, timePerImage, effectiveDuration]);
+
   useEffect(() => {
     const audio = audioRef.current;
     if (!audio) return;
-
     const handleEnded = () => stopPlayback();
     audio.addEventListener('ended', handleEnded);
     return () => audio.removeEventListener('ended', handleEnded);
@@ -141,62 +150,72 @@ export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, script,
 
   if (itemsCount === 0) return null;
 
-  // Pick a Ken Burns effect for each image (deterministic per index)
   const getKbEffect = (index: number) => KB_EFFECTS[index % KB_EFFECTS.length];
 
+  // Calculate current sentence for subtitles
+  const currentSentenceIdx = allSentences.length > 0 
+    ? Math.min(allSentences.length - 1, Math.floor((currentElapsed / effectiveDuration) * allSentences.length))
+    : 0;
+  const currentSentence = allSentences[currentSentenceIdx];
+
   return (
-    <div className="reels-player" onClick={togglePlay}>
+    <div
+      className="reels-player"
+      onClick={togglePlay}
+      role="button"
+      tabIndex={0}
+      aria-label={isPlaying ? 'Pause narration' : 'Play narration'}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); togglePlay(); } }}
+    >
       {audioUrl && <audio ref={audioRef} src={audioUrl} preload="auto" />}
-      
+
       <div className="reels-viewport">
         {Array.from({ length: itemsCount }).map((_, index) => {
           const src = hasStaticUrls ? getImageUrl(imageUrls[index], true) : getImageUrl(imagePrompts![index], false);
+          const isActive = index === currentIndex;
           return (
-            <div 
-              key={index} 
-              className={`reels-slide ${index === currentIndex ? 'active' : ''}`}
-              style={{ 
-                opacity: index === currentIndex ? 1 : 0,
-                zIndex: index === currentIndex ? 10 : 1,
-              }}
+            <div
+              key={index}
+              className={`reels-slide ${isActive ? 'active' : ''}`}
+              style={{ opacity: isActive ? 1 : 0, zIndex: isActive ? 10 : 1 }}
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img 
-                src={src} 
+              <img
+                key={isActive ? `active-${index}` : `idle-${index}`}
+                src={src}
                 alt={`Scene ${index + 1}`}
-                className={isPlaying && index === currentIndex ? getKbEffect(index) : ''}
-                style={{ animationDuration: `${timePerImage / 1000}s` }}
+                className={isActive ? getKbEffect(index) : ''}
+                style={{
+                  animationDuration: `${timePerImage}s`,
+                  animationPlayState: isActive && isPlaying ? 'running' : 'paused',
+                }}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src =
+                    'https://image.pollinations.ai/prompt/dark%20starry%20night%20sky%20constellations%20astrology?width=1920&height=1080&nologo=true';
+                }}
               />
             </div>
           );
         })}
       </div>
 
-      {/* Synced Subtitles */}
-      {isPlaying && subtitles[currentIndex] && (
-        <div className="reels-subtitle" key={currentIndex}>
-          {subtitles[currentIndex]}
+      {isPlaying && currentSentence && (
+        <div className="reels-subtitle">
+          {currentSentence}
         </div>
       )}
 
       <div className="reels-overlay">
-        {!isPlaying && (
-          <div className="play-button">
-            ▶
-          </div>
-        )}
+        {!isPlaying && <div className="play-button">▶</div>}
         <div className="progress-bar-container">
-          {Array.from({ length: itemsCount }).map((_, idx) => (
-            <div key={idx} className="progress-segment">
-              <div 
-                className="progress-fill" 
-                style={{ 
-                  width: idx < currentIndex ? '100%' : idx === currentIndex && isPlaying ? '100%' : '0%',
-                  transition: idx === currentIndex && isPlaying ? `width ${timePerImage}ms linear` : 'none'
-                }}
-              />
-            </div>
-          ))}
+          {Array.from({ length: itemsCount }).map((_, idx) => {
+            const width = idx < currentIndex ? 100 : idx === currentIndex ? slideProgress * 100 : 0;
+            return (
+              <div key={idx} className="progress-segment">
+                <div className="progress-fill" style={{ width: `${width}%` }} />
+              </div>
+            );
+          })}
         </div>
       </div>
     </div>

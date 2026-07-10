@@ -6,6 +6,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 import { generateContent } from '../src/lib/gemini';
 import { generateAudio } from '../src/lib/tts';
 import { getAllPosts } from '../src/lib/posts';
+import { buildImagePrompt } from '../src/lib/image-style';
 
 async function generateDaily() {
   console.log('🔮 Starting TONA TOTKA Daily Content Generation...');
@@ -48,14 +49,15 @@ async function generateDaily() {
     const imageUrls: string[] = [];
     for (let i = 0; i < content.image_prompts.length; i++) {
       const prompt = content.image_prompts[i];
-      const encodedPrompt = encodeURIComponent(prompt + ", cinematic lighting, shallow depth of field, 35mm film grain, award-winning National Geographic photography, volumetric light");
-      const pollinationsUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1920&height=1080&nologo=true`;
+      // Add the Alchemist's Terminal style modifiers to get woodcut ink sketches
+      const encodedPrompt = encodeURIComponent(buildImagePrompt(prompt));
+      const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1080&height=1920&nologo=true`;
       
       try {
         console.log(`Waiting 10s before downloading image ${i+1} to respect Pollinations rate limits...`);
         await new Promise(resolve => setTimeout(resolve, 10000));
         
-        const response = await fetch(pollinationsUrl);
+        const response = await fetch(imageUrl);
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const buffer = await response.arrayBuffer();
@@ -65,7 +67,7 @@ async function generateDaily() {
         console.log(`✅ Downloaded image ${i + 1}`);
       } catch (error) {
         console.error(`⚠️ Failed to download image ${i + 1}:`, error instanceof Error ? error.message : String(error));
-        imageUrls.push(pollinationsUrl); // Fallback to remote URL if download fails
+        imageUrls.push(imageUrl); // Fallback to remote URL if download fails
       }
     }
 

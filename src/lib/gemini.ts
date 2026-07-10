@@ -24,7 +24,7 @@ CRITICAL CONSTRAINTS:
 2. The 'script' field MUST be capped at roughly 80-90 words (designed to be spoken in under 35 seconds).
 
 3. CRITICAL: Do NOT cover a topic that is the same as, or highly similar to, any of the following previously covered topics:
-   ${previousTitles.length ? previousTitles.join('\\n   - ') : 'None'}
+   ${previousTitles.length ? previousTitles.map(t => `   - ${t}`).join('\n') : 'None'}
 
 4. 'blog_html' should use standard HTML tags (p, h2, h3, ul, li, strong, em). Make the blog post engaging, spooky, but educational, explaining the cultural or historical roots in India.
 
@@ -40,10 +40,10 @@ CRITICAL CONSTRAINTS:
    - Shot 5 (RESOLUTION): The aftermath — a peaceful, reverent, or contemplative scene showing the cultural significance. Warm, hopeful tones.
 
    PROMPT QUALITY RULES:
-   - Each prompt must be 40-80 words, highly specific
-   - Specify: camera angle, lighting type, time of day, Indian ethnicity/clothing/setting
-   - Include style keywords: "cinematic lighting, shallow depth of field, 35mm film, volumetric light, National Geographic photography"
-   - Specify emotional tone: "ominous, reverent, serene, mysterious, sacred"
+   - Each prompt must be 30-60 words, highly specific and CONCRETE — describe exactly what is happening, who is doing it, and with what object, before anything else.
+   - Do NOT include art-style or medium keywords (no "photography," "cinematic," "film," "illustration," etc.) — a consistent illustration style is applied automatically downstream. Focus every word budget on subject, action, setting, and composition instead.
+   - Specify: camera framing/angle, time of day, specific Indian setting (village courtyard, temple threshold, kitchen doorway, etc.), and the exact gesture or object central to the ritual.
+   - Specify emotional tone in plain terms: "ominous," "reverent," "serene," "mysterious," "sacred"
    - NEVER include any text, words, letters, watermarks, or UI elements in the prompt
    - NEVER use names of real people or celebrities
    - Always describe subjects as Indian with appropriate traditional attire (saree, kurta, dhoti, etc.) and cultural elements (diyas, rangoli, temple, village, etc.)`;
@@ -93,5 +93,41 @@ PREVIOUS ATTEMPT FAILED VALIDATION. Ensure it strictly matches the JSON schema. 
   } catch (error) {
     console.error('Gemini Generation Error:', error);
     throw new Error(`Failed to generate script: ${error instanceof Error ? error.message : String(error)}`);
+  }
+}
+
+export async function answerQuestion(postContext: string, question: string): Promise<string> {
+  const model = "gemini-2.5-flash";
+  const ai = getGeminiClient();
+  
+  const systemPrompt = `You are the mystical, wise AI narrator of TONA TOTKA, an Indian folklore and superstitions blog.
+A user has asked a question in the comment section of a specific blog post.
+Your job is to answer their question using the context of the blog post and your vast knowledge of Indian superstitions, myths, and folklore.
+
+CONSTRAINTS:
+1. Keep the answer concise (2-4 sentences max).
+2. Maintain a mystical, respectful, but informative tone.
+3. Only use plain text or very light markdown (bolding/italics). No headers or complex formatting.`;
+
+  const userPrompt = `Blog Post Context:
+${postContext}
+
+User's Question:
+${question}
+
+Answer the question:`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model,
+      contents: userPrompt,
+      config: {
+        systemInstruction: systemPrompt,
+      }
+    });
+    return response.text || "I'm sorry, the spirits are quiet today and I cannot answer that.";
+  } catch (error) {
+    console.error('Gemini Q&A Error:', error);
+    return "The mystical energies are disrupted. Please try asking again later.";
   }
 }

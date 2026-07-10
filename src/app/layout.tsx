@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
+import { Marcellus, Cormorant, Rajdhani } from 'next/font/google';
 import "./globals.css";
+import StarfieldBackground from "../components/StarfieldBackground";
 
 export const metadata: Metadata = {
   title: "TONA TOTKA.COM",
@@ -21,14 +23,36 @@ export const metadata: Metadata = {
   }
 };
 
+const marcellus = Marcellus({
+  weight: '400',
+  subsets: ['latin'],
+  variable: '--font-display',
+});
+
+const cormorant = Cormorant({
+  weight: ['500', '600'],
+  style: ['normal', 'italic'],
+  subsets: ['latin'],
+  variable: '--font-head',
+});
+
+const rajdhani = Rajdhani({
+  weight: ['400', '500', '600'],
+  subsets: ['latin'],
+  variable: '--font-body',
+});
+
 export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body>{children}</body>
+    <html lang="en" className={`${marcellus.variable} ${cormorant.variable} ${rajdhani.variable}`}>
+      <body>
+        <StarfieldBackground />
+        {children}
+      </body>
     </html>
   );
 }

@@ -6,12 +6,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   const posts = getAllPosts();
 
-  const postEntries = posts.map((post) => ({
-    url: `${baseUrl}/${post.slug}`,
-    lastModified: new Date(post.created_at),
-    changeFrequency: 'weekly' as const,
-    priority: 0.8,
-  }));
+  const postEntries = posts.map((post) => {
+    const d = new Date(post.created_at);
+    return {
+      url: `${baseUrl}/${post.slug}`,
+      lastModified: isNaN(d.getTime()) ? new Date() : d,
+      changeFrequency: 'weekly' as const,
+      priority: 0.8,
+    };
+  });
 
   return [
     {

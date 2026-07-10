@@ -5,6 +5,7 @@ import { getPostBySlug, getAllPosts } from '../../lib/posts';
 import { getReadingTime, stripLeadingTitle } from '../../lib/reading-time';
 import ReelsPlayer from '../../components/ReelsPlayer';
 import ShareButtons from '../../components/ShareButtons';
+import CommentSection from '../../components/CommentSection';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -107,6 +108,8 @@ export default async function PostPage({ params }: Props) {
         />
 
         <ShareButtons title={post.title} slug={post.slug} />
+        
+        <CommentSection slug={post.slug} />
       </article>
 
       {relatedPosts.length > 0 && (
