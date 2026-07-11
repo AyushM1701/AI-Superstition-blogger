@@ -7,6 +7,7 @@ import CommentSection from '../components/CommentSection';
 import ArchiveGrid from '../components/ArchiveGrid';
 import FallbackImage from '../components/FallbackImage';
 import OrionMark from '../components/OrionMark';
+import CountdownTimer from '../components/CountdownTimer';
 
 export const revalidate = 3600; // 1 hour ISR
 
@@ -22,13 +23,16 @@ export default async function Home() {
 
   return (
     <main className="container">
-      <header className="header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <h1 className="site-title" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', margin: '0' }}>
-          <OrionMark width={34} height={48} />
+      <header className="header header-glow" style={{ textAlign: 'center', marginBottom: '1.5rem', position: 'relative' }}>
+        <div className="header-glow-bg"></div>
+        <h1 className="site-title" style={{ color: 'var(--accent)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', margin: '0' }}>
+          <OrionMark width={44} height={62} />
           TONA TOTKA.COM
         </h1>
-        <p style={{ fontFamily: 'var(--font-head)', fontStyle: 'italic', color: 'var(--text-secondary)' }}>Uncover the truth behind Indian folklore, myths, and superstitions.</p>
+        <p style={{ fontFamily: 'var(--font-head)', fontStyle: 'italic', color: 'var(--text-secondary)', marginTop: '1.5rem' }}>Uncover the truth behind Indian folklore, myths, and superstitions.</p>
       </header>
+
+      <div className="mystical-divider-horizontal delay-draw" style={{ margin: '0 auto 4rem', width: '60%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--accent), transparent)', opacity: 0.3 }}></div>
 
       {(!featuredPost) ? (
         <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
@@ -37,13 +41,16 @@ export default async function Home() {
       ) : (
         <>
           <section>
-            <h2 className="section-title">✨ Tona Totka of the Day</h2>
-            <div className="single-layout">
+            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
+              <h2 className="section-title" style={{ marginBottom: '0.5rem' }}>✨ Tona Totka of the Day</h2>
+              <CountdownTimer />
+            </div>
+            <div className="single-layout featured-card">
               <div className="split-blog">
                 <h3 className="featured-title">
                   {featuredPost.title}
                 </h3>
-                <span className="reading-time">📖 {getReadingTime(featuredPost.blog_html)}</span>
+                <span className="reading-time reading-time-badge">📖 {getReadingTime(featuredPost.blog_html)}</span>
                 
                 <div className="player-container" style={{ marginTop: '1.5rem' }}>
                   <ReelsPlayer 

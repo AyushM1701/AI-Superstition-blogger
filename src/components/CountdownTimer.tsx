@@ -43,8 +43,10 @@ export default function CountdownTimer() {
   }
 
   return (
-    <div style={{ textAlign: 'center', margin: '1.5rem 0', fontFamily: 'var(--font-body)', fontSize: '1.1rem', color: 'var(--text-secondary)' }}>
-      Tomorrow's totka unlocks in <span style={{ color: 'var(--accent)', fontWeight: '600' }}>{timeLeft}</span>
+    <div style={{ textAlign: 'center', margin: '1.5rem 0' }}>
+      <div className="countdown-pill">
+        Tomorrow's totka unlocks in <span>{timeLeft}</span>
+      </div>
     </div>
   );
 }
