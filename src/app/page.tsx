@@ -6,6 +6,7 @@ import ShareButtons from '../components/ShareButtons';
 import CommentSection from '../components/CommentSection';
 import ArchiveGrid from '../components/ArchiveGrid';
 import FallbackImage from '../components/FallbackImage';
+import OrionMark from '../components/OrionMark';
 
 export const revalidate = 3600; // 1 hour ISR
 
@@ -22,30 +23,8 @@ export default async function Home() {
   return (
     <main className="container">
       <header className="header" style={{ textAlign: 'center', marginBottom: '3rem' }}>
-        <svg className="header-starfield" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <defs>
-            <pattern id="stars" width="200" height="200" patternUnits="userSpaceOnUse">
-              <path d="M20 180 L80 100 L160 160" fill="none" stroke="#8b8fb0" strokeWidth="0.5" opacity="0.2"/>
-              <circle cx="20" cy="180" r="1.5" fill="#8b8fb0" className="star-twinkle"/>
-              <circle cx="80" cy="100" r="2" fill="#8b8fb0" opacity="0.2"/>
-              <circle cx="160" cy="160" r="1.5" fill="#8b8fb0" className="star-twinkle-2"/>
-              <path d="M60 20 L120 60 L180 20" fill="none" stroke="#8b8fb0" strokeWidth="0.5" opacity="0.2"/>
-              <circle cx="60" cy="20" r="1.5" fill="#8b8fb0" opacity="0.2"/>
-              <circle cx="120" cy="60" r="2" fill="#8b8fb0" className="star-twinkle-3"/>
-              <circle cx="180" cy="20" r="1.5" fill="#8b8fb0" opacity="0.2"/>
-            </pattern>
-          </defs>
-          <rect width="100%" height="100%" fill="url(#stars)" />
-        </svg>
         <h1 className="site-title" style={{ color: 'var(--accent)', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', margin: '0' }}>
-          <svg width="48" height="48" viewBox="0 0 100 100" aria-hidden="true" style={{ display: 'inline-block' }}>
-            <path className="constellation-path constellation-path--header" d="M10 50 L30 20 L50 80 L70 30 L90 60" fill="none" stroke="var(--accent)" strokeWidth="1.5" />
-            <circle className="constellation-star constellation-star-1" cx="10" cy="50" r="1.5" fill="var(--accent)" />
-            <circle className="constellation-star constellation-star-large" cx="30" cy="20" r="2.5" fill="var(--accent)" />
-            <circle className="constellation-star constellation-star-2" cx="50" cy="80" r="1.5" fill="var(--accent)" />
-            <circle className="constellation-star constellation-star-3" cx="70" cy="30" r="1.5" fill="var(--accent)" />
-            <circle className="constellation-star constellation-star-4" cx="90" cy="60" r="1.5" fill="var(--accent)" />
-          </svg>
+          <OrionMark width={34} height={48} />
           TONA TOTKA.COM
         </h1>
         <p style={{ fontFamily: 'var(--font-head)', fontStyle: 'italic', color: 'var(--text-secondary)' }}>Uncover the truth behind Indian folklore, myths, and superstitions.</p>
@@ -95,15 +74,11 @@ export default async function Home() {
             </div>
           </section>
 
-          <div className="mystical-divider delay-draw">
-            <svg width="40" height="20" viewBox="0 0 100 50" xmlns="http://www.w3.org/2000/svg">
-              <path className="constellation-path constellation-path--divider" d="M10 25 L30 10 L50 40 L70 15 L90 25" fill="none" stroke="var(--accent)" strokeWidth="2" />
-              <circle className="constellation-star constellation-star-1" cx="10" cy="25" r="2" fill="var(--accent)" />
-              <circle className="constellation-star constellation-star-large" cx="30" cy="10" r="3" fill="var(--accent)" />
-              <circle className="constellation-star constellation-star-2" cx="50" cy="40" r="2" fill="var(--accent)" />
-              <circle className="constellation-star constellation-star-large" cx="70" cy="15" r="4" fill="var(--accent)" />
-              <circle className="constellation-star constellation-star-3" cx="90" cy="25" r="2" fill="var(--accent)" />
-            </svg>
+          <div
+            className="mystical-divider delay-draw"
+            style={{ display: 'flex', justifyContent: 'center', margin: '3rem 0' }}
+          >
+            <OrionMark width={70} height={98} strokeOpacity={0.4} />
           </div>
 
           {archivePosts.length > 0 && (

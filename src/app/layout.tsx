@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Marcellus, Cormorant, Rajdhani } from 'next/font/google';
 import "./globals.css";
 import StarfieldBackground from "../components/StarfieldBackground";
+import ReadingProgressBar from "../components/ReadingProgressBar";
 
 export const metadata: Metadata = {
   title: "TONA TOTKA.COM",
@@ -48,9 +49,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${marcellus.variable} ${cormorant.variable} ${rajdhani.variable}`}>
-      <body>
+    <html lang="en">
+      <body className={`${marcellus.variable} ${cormorant.variable} ${rajdhani.variable}`}>
         <StarfieldBackground />
+        <ReadingProgressBar />
         {children}
       </body>
     </html>

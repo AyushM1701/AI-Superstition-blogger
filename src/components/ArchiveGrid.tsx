@@ -44,16 +44,10 @@ export default function ArchiveGrid({ children }: { children: React.ReactNode[] 
           <div
             key={index}
             data-index={index}
-            className="archive-card-wrapper"
+            className={`archive-card-wrapper ${isVisible ? 'is-visible' : ''}`}
             style={{
-              opacity: isVisible ? 1 : 0,
-              transform: isVisible ? 'translateY(0)' : 'translateY(16px)',
-              transition: `opacity 500ms ease-out, transform 500ms ease-out`,
-              transitionDelay: `${(index % 3) * 80}ms`,
-              display: 'flex',
-              height: '100%',
-              width: '100%'
-            }}
+              '--card-delay': `${(index % 3) * 80}ms`,
+            } as React.CSSProperties}
           >
             {child}
           </div>
