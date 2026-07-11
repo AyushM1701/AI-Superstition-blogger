@@ -14,7 +14,9 @@ interface Comment {
   aiReply?: string;
 }
 
-const COMMENTS_DIR = path.join(process.cwd(), 'data/comments');
+const COMMENTS_DIR = process.env.VERCEL 
+  ? path.join('/tmp', 'comments') 
+  : path.join(process.cwd(), 'data/comments');
 
 // Helper to get path
 function getCommentsPath(slug: string) {
