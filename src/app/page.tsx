@@ -65,6 +65,8 @@ export default async function Home() {
                     <SparkMark />
                   </div>
                   TONA TOTKA OF THE DAY
+                  {/* Invisible spacer balances the SparkMark to keep text optically centered */}
+                  <div style={{ width: '20px' }} aria-hidden="true" />
                 </h2>
                 <CountdownTimer />
               </div>
