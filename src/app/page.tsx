@@ -5,7 +5,7 @@ import { buildPollinationsImageUrl } from '../lib/image-style';
 import ReelsPlayer from '../components/ReelsPlayer';
 import ShareButtons from '../components/ShareButtons';
 import CommentSection from '../components/CommentSection';
-import ArchiveGrid from '../components/ArchiveGrid';
+import SmartArchive from '../components/SmartArchive';
 import FallbackImage from '../components/FallbackImage';
 import OrionMark from '../components/OrionMark';
 import CountdownTimer from '../components/CountdownTimer';
@@ -128,30 +128,13 @@ export default async function Home() {
           </Reveal>
 
           {archivePosts.length > 0 && (
-            <section>
-              <h2 className="section-title">📖 Smart Archive</h2>
-              <ArchiveGrid>
-                {archivePosts.map((post) => (
-                  <Link href={`/${post.slug}`} key={post.slug} className="video-card">
-                    <FallbackImage
-                      src={post.image_urls?.[0] || getThumbnailUrl(post.image_prompts?.[0] || post.title)}
-                      alt={post.title}
-                      className="thumbnail-image"
-                      loading="lazy"
-                      fallbackSrc={buildPollinationsImageUrl('dark starry night sky constellations astrology', 1280, 720)}
-                    />
-                    <div className="card-content">
-                      <h2 className="card-title">{post.title}</h2>
-                      <div className="tags">
-                        {post.tags && post.tags.slice(0, 3).map((tag: string) => (
-                          <span key={tag} className="tag">{tag}</span>
-                        ))}
-                      </div>
-                    </div>
-                  </Link>
-                ))}
-              </ArchiveGrid>
-            </section>
+            <SmartArchive posts={archivePosts.map(p => ({
+              slug: p.slug,
+              title: p.title,
+              tags: p.tags,
+              image_urls: p.image_urls,
+              image_prompts: p.image_prompts
+            }))} />
           )}
         </>
       )}
