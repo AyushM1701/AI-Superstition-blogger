@@ -3,6 +3,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { getPostBySlug, getAllPosts } from '../../lib/posts';
 import { getReadingTime, stripLeadingTitle } from '../../lib/reading-time';
+import { buildPollinationsImageUrl } from '../../lib/image-style';
 import ReelsPlayer from '../../components/ReelsPlayer';
 import ShareButtons from '../../components/ShareButtons';
 import CommentSection from '../../components/CommentSection';
@@ -30,7 +31,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-superstition-blogger-4nnb.vercel.app';
   
   // Default to Pollinations URL if we don't have local static images yet
-  let ogImage = `https://image.pollinations.ai/prompt/${encodeURIComponent(post.title + ", cinematic, 8k")}?width=1200&height=630&nologo=true`;
+  let ogImage = buildPollinationsImageUrl(post.title, 1200, 630);
   if (post.image_urls && post.image_urls.length > 0) {
     ogImage = `${baseUrl}${post.image_urls[0]}`;
   }
@@ -47,8 +48,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 function getThumbnailUrl(prompt: string): string {
-  const encodedPrompt = encodeURIComponent(prompt + ", cinematic, highly detailed, professional photography");
-  return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1280&height=720&nologo=true`;
+  return buildPollinationsImageUrl(prompt, 1280, 720);
 }
 
 export default async function PostPage({ params }: Props) {
@@ -84,11 +84,7 @@ export default async function PostPage({ params }: Props) {
               <span style={{ color: 'var(--card-border)' }}>•</span>
               <span className="reading-time">📖 {getReadingTime(post.blog_html)}</span>
             </div>
-            <div className="tags">
-              {post.tags && post.tags.map((tag: string) => (
-                <span key={tag} className="tag">{tag}</span>
-              ))}
-            </div>
+
           </div>
         </header>
 
@@ -102,10 +98,20 @@ export default async function PostPage({ params }: Props) {
           />
         </div>
 
+        <div className="image-text-divider" aria-hidden="true">❦</div>
+
         <div 
           className="blog-content"
           dangerouslySetInnerHTML={{ __html: stripLeadingTitle(post.blog_html, post.title) }}
         />
+
+        <div className="article-end-mark" aria-hidden="true">✦</div>
+
+        <div className="tags" style={{ justifyContent: 'center' }}>
+          {post.tags && post.tags.slice(0, 5).map((tag: string) => (
+            <span key={tag} className="tag">{tag}</span>
+          ))}
+        </div>
 
         <ShareButtons title={post.title} slug={post.slug} />
         

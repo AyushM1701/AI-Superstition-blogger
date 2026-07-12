@@ -6,7 +6,7 @@ dotenv.config({ path: path.resolve(process.cwd(), '.env.local') });
 import { generateContent } from '../src/lib/gemini';
 import { generateAudio } from '../src/lib/tts';
 import { getAllPosts } from '../src/lib/posts';
-import { buildImagePrompt } from '../src/lib/image-style';
+import { buildPollinationsImageUrl } from '../src/lib/image-style';
 
 async function generateDaily() {
   console.log('🔮 Starting TONA TOTKA Daily Content Generation...');
@@ -50,8 +50,7 @@ async function generateDaily() {
     for (let i = 0; i < content.image_prompts.length; i++) {
       const prompt = content.image_prompts[i];
       // Add the Alchemist's Terminal style modifiers to get woodcut ink sketches
-      const encodedPrompt = encodeURIComponent(buildImagePrompt(prompt));
-      const imageUrl = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1080&height=1920&nologo=true`;
+      const imageUrl = buildPollinationsImageUrl(prompt, 1920, 1080);
       
       try {
         console.log(`Waiting 10s before downloading image ${i+1} to respect Pollinations rate limits...`);

@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import { buildPollinationsImageUrl } from '../src/lib/image-style';
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -32,8 +33,7 @@ async function fixBrokenImages() {
         await delay(10000);
         
         const prompt = post.image_prompts[i];
-        const encodedPrompt = encodeURIComponent(prompt + ", cinematic lighting, shallow depth of field, 35mm film grain, award-winning National Geographic photography, volumetric light");
-        const url = `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1920&height=1080&nologo=true`;
+        const url = buildPollinationsImageUrl(prompt, 1920, 1080);
         
         console.log(`Downloading...`);
         try {

@@ -1,19 +1,19 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, CSSProperties } from 'react';
 import { useScrollReveal } from '../lib/useScrollReveal';
 
 interface RevealProps {
   children: ReactNode;
   className?: string;
-  as?: 'div' | 'section';
+  style?: CSSProperties;
+  as?: any;
   delay?: number; // ms
   y?: number;     // px translate distance
-  style?: React.CSSProperties; // Add style to props so we can pass inline styles through
 }
 
-export default function Reveal({ children, className = '', as = 'div', delay = 0, y = 24, style = {} }: RevealProps) {
-  const { ref, visible } = useScrollReveal<HTMLDivElement>();
+export default function Reveal({ children, className = '', style = {}, as = 'div', delay = 0, y = 24 }: RevealProps) {
+  const { ref, visible } = useScrollReveal<HTMLElement>();
   const Tag = as as any;
 
   return (

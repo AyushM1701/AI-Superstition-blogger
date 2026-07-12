@@ -1,58 +1,19 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import Reveal from './Reveal';
 
 export default function ArchiveGrid({ children }: { children: React.ReactNode[] }) {
-  const [visibleIndexes, setVisibleIndexes] = useState<Set<number>>(new Set());
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) {
-      setVisibleIndexes(new Set(children.map((_, i) => i)));
-      return;
-    }
-
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const index = Number(entry.target.getAttribute('data-index'));
-            setVisibleIndexes((prev) => {
-              const next = new Set(prev);
-              next.add(index);
-              return next;
-            });
-            observer.unobserve(entry.target);
-          }
-        });
-      },
-      { rootMargin: '50px', threshold: 0.1 }
-    );
-
-    const elements = containerRef.current?.querySelectorAll('[data-index]');
-    elements?.forEach((el) => observer.observe(el));
-
-    return () => observer.disconnect();
-  }, [children.length]);
-
   return (
-    <div className="video-grid" ref={containerRef}>
-      {children.map((child, index) => {
-        const isVisible = visibleIndexes.has(index);
-        return (
-          <div
-            key={index}
-            data-index={index}
-            className={`archive-card-wrapper ${isVisible ? 'is-visible' : ''}`}
-            style={{
-              '--card-delay': `${(index % 3) * 80}ms`,
-            } as React.CSSProperties}
-          >
-            {child}
-          </div>
-        );
-      })}
+    <div className="video-grid">
+      {children.map((child, index) => (
+        <Reveal
+          key={index}
+          className="archive-card-wrapper is-visible"
+          delay={(index % 3) * 80}
+        >
+          {child}
+        </Reveal>
+      ))}
     </div>
   );
 }

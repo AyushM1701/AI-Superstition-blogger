@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import { buildImagePrompt } from '../lib/image-style';
+import { buildPollinationsImageUrl } from '../lib/image-style';
 
 interface ReelsPlayerProps {
   imagePrompts?: string[];
@@ -31,7 +31,7 @@ export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, script,
 
   const getImageUrl = (promptOrUrl: string, isUrl: boolean) => {
     if (isUrl) return promptOrUrl;
-    return `https://image.pollinations.ai/prompt/${encodeURIComponent(buildImagePrompt(promptOrUrl))}?width=1920&height=1080&nologo=true`;
+    return buildPollinationsImageUrl(promptOrUrl, 1920, 1080);
   };
 
   const hasStaticUrls = !!imageUrls && imageUrls.length > 0;
@@ -190,8 +190,7 @@ export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, script,
                   animationPlayState: isActive && isPlaying ? 'running' : 'paused',
                 }}
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    'https://image.pollinations.ai/prompt/dark%20starry%20night%20sky%20constellations%20astrology?width=1920&height=1080&nologo=true';
+                  (e.target as HTMLImageElement).src = buildPollinationsImageUrl('dark starry night sky constellations astrology', 1920, 1080);
                 }}
               />
             </div>

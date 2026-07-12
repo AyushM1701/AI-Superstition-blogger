@@ -1,4 +1,5 @@
 import { getAllPosts } from '../../lib/posts';
+import { buildPollinationsImageUrl } from '../../lib/image-style';
 
 export async function GET() {
   const posts = getAllPosts();
@@ -16,7 +17,7 @@ export async function GET() {
         const postUrl = `${baseUrl}/${post.slug}`;
         const imageUrl = post.image_urls && post.image_urls.length > 0 
           ? `${baseUrl}${post.image_urls[0]}`
-          : `https://image.pollinations.ai/prompt/${encodeURIComponent(post.title + ", cinematic, 8k")}?width=1200&height=630&nologo=true`;
+          : buildPollinationsImageUrl(post.title, 1200, 630);
 
         return `
         <item>

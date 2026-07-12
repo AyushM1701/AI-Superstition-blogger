@@ -97,9 +97,7 @@ export default function CommentSection({ slug }: { slug: string }) {
         <h3 className="comment-title" style={{ margin: 0 }}>
           Ask the Spirits {comments.length > 0 && `(${comments.length})`}
         </h3>
-        <span className="toggle-icon" style={{ fontSize: '1.2rem', color: 'var(--accent-color)' }}>
-          {isOpen ? '▲' : '▼'}
-        </span>
+        <span className="toggle-icon"></span>
       </button>
       
       {isOpen && (

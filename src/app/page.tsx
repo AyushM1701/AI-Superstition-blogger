@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { getAllPosts } from '../lib/posts';
 import { getReadingTime, stripLeadingTitle } from '../lib/reading-time';
+import { buildPollinationsImageUrl } from '../lib/image-style';
 import ReelsPlayer from '../components/ReelsPlayer';
 import ShareButtons from '../components/ShareButtons';
 import CommentSection from '../components/CommentSection';
@@ -8,12 +9,25 @@ import ArchiveGrid from '../components/ArchiveGrid';
 import FallbackImage from '../components/FallbackImage';
 import OrionMark from '../components/OrionMark';
 import CountdownTimer from '../components/CountdownTimer';
+import Reveal from '../components/Reveal';
+import RevealBlogContent from '../components/RevealBlogContent';
+import ReadingProgress from '../components/ReadingProgress';
 
 export const revalidate = 3600; // 1 hour ISR
 
 function getThumbnailUrl(prompt: string): string {
-  const encodedPrompt = encodeURIComponent(prompt + ", hand-drawn vintage ink sketch, woodcut illustration, alchemical style, esoteric, highly detailed");
-  return `https://image.pollinations.ai/prompt/${encodedPrompt}?width=1280&height=720&nologo=true`;
+  return buildPollinationsImageUrl(prompt, 1280, 720);
+}
+
+function SparkMark({ size = 20 }: { size?: number }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" aria-hidden="true" className="star-twinkle-2">
+      <path
+        d="M12 2 L13.5 9.5 L21 11 L13.5 12.5 L12 20 L10.5 12.5 L3 11 L10.5 9.5 Z"
+        fill="var(--accent)"
+      />
+    </svg>
+  );
 }
 
 export default async function Home() {
@@ -23,16 +37,19 @@ export default async function Home() {
 
   return (
     <main className="container">
-      <header className="header header-glow" style={{ textAlign: 'center', marginBottom: '1.5rem', position: 'relative' }}>
+      <ReadingProgress />
+      <Reveal as="header" className="header header-glow" style={{ textAlign: 'center', marginBottom: '1.5rem', position: 'relative' }}>
         <div className="header-glow-bg"></div>
         <h1 className="site-title" style={{ color: 'var(--accent)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '0.75rem', margin: '0' }}>
           <OrionMark width={44} height={62} />
           TONA TOTKA.COM
         </h1>
         <p style={{ fontFamily: 'var(--font-head)', fontStyle: 'italic', color: 'var(--text-secondary)', marginTop: '1.5rem' }}>Uncover the truth behind Indian folklore, myths, and superstitions.</p>
-      </header>
+      </Reveal>
 
-      <div className="mystical-divider-horizontal delay-draw" style={{ margin: '0 auto 4rem', width: '60%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--accent), transparent)', opacity: 0.3 }}></div>
+      <Reveal delay={100}>
+        <div className="mystical-divider-horizontal delay-draw" style={{ margin: '0 auto 4rem', width: '60%', height: '1px', background: 'linear-gradient(90deg, transparent, var(--accent), transparent)', opacity: 0.3 }}></div>
+      </Reveal>
 
       {(!featuredPost) ? (
         <div style={{ textAlign: 'center', color: 'var(--text-secondary)' }}>
@@ -41,10 +58,17 @@ export default async function Home() {
       ) : (
         <>
           <section>
-            <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
-              <h2 className="section-title" style={{ marginBottom: '0.5rem' }}>✨ Tona Totka of the Day</h2>
-              <CountdownTimer />
-            </div>
+            <Reveal delay={150}>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginBottom: '2rem' }}>
+                <h2 className="section-title" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.6rem', marginBottom: '0.5rem', lineHeight: 1 }}>
+                  <div style={{ display: 'flex', transform: 'translateY(-1px)' }}>
+                    <SparkMark />
+                  </div>
+                  TONA TOTKA OF THE DAY
+                </h2>
+                <CountdownTimer />
+              </div>
+            </Reveal>
             <div className="single-layout featured-card">
               <div className="split-blog">
                 <h3 className="featured-title">
@@ -52,7 +76,7 @@ export default async function Home() {
                 </h3>
                 <span className="reading-time reading-time-badge">📖 {getReadingTime(featuredPost.blog_html)}</span>
                 
-                <div className="player-container" style={{ marginTop: '1.5rem' }}>
+                <Reveal delay={200} className="player-container">
                   <ReelsPlayer 
                     imagePrompts={featuredPost.image_prompts || []} 
                     imageUrls={featuredPost.image_urls}
@@ -60,33 +84,46 @@ export default async function Home() {
                     script={featuredPost.script}
                     durationInSeconds={35}
                   />
-                </div>
+                </Reveal>
 
-                <div className="tags" style={{ marginBottom: '2rem' }}>
-                  {featuredPost.tags && featuredPost.tags.map(tag => (
-                    <span key={tag} className="tag">{tag}</span>
-                  ))}
-                </div>
-                
-                <div 
-                  className="blog-content"
-                  dangerouslySetInnerHTML={{ __html: stripLeadingTitle(featuredPost.blog_html, featuredPost.title) }}
-                />
+                <Reveal delay={250}>
+                  <div className="image-text-divider" aria-hidden="true">❦</div>
+                </Reveal>
 
-                <ShareButtons title={featuredPost.title} slug={featuredPost.slug} />
-                <div style={{ marginTop: '3rem', borderTop: '1px solid var(--card-border)', paddingTop: '2rem' }}>
-                  <CommentSection slug={featuredPost.slug} />
-                </div>
+                <RevealBlogContent html={stripLeadingTitle(featuredPost.blog_html, featuredPost.title)} />
+
+                <Reveal delay={50}>
+                  <div className="article-end-mark" aria-hidden="true">✦</div>
+                </Reveal>
+
+                <Reveal delay={100}>
+                  <div className="tags">
+                    {featuredPost.tags && featuredPost.tags.slice(0, 5).map(tag => (
+                      <span key={tag} className="tag">{tag}</span>
+                    ))}
+                  </div>
+                </Reveal>
+
+                <Reveal delay={150}>
+                  <ShareButtons title={featuredPost.title} slug={featuredPost.slug} />
+                </Reveal>
+                <Reveal delay={250}>
+                  <div style={{ marginTop: '3rem', borderTop: '1px solid var(--card-border)', paddingTop: '2rem' }}>
+                    <CommentSection slug={featuredPost.slug} />
+                  </div>
+                </Reveal>
               </div>
             </div>
           </section>
 
-          <div
-            className="mystical-divider delay-draw"
-            style={{ display: 'flex', justifyContent: 'center', margin: '3rem 0' }}
-          >
-            <OrionMark width={70} height={98} strokeOpacity={0.4} />
-          </div>
+          <Reveal delay={200}>
+            <div
+              className="mystical-divider delay-draw"
+              style={{ display: 'flex', justifyContent: 'center', margin: '3rem 0' }}
+            >
+              <OrionMark width={70} height={98} strokeOpacity={0.4} />
+            </div>
+          </Reveal>
 
           {archivePosts.length > 0 && (
             <section>
@@ -99,7 +136,7 @@ export default async function Home() {
                       alt={post.title}
                       className="thumbnail-image"
                       loading="lazy"
-                      fallbackSrc="https://image.pollinations.ai/prompt/dark%20starry%20night%20sky%20constellations%20astrology?width=1280&height=720&nologo=true"
+                      fallbackSrc={buildPollinationsImageUrl('dark starry night sky constellations astrology', 1280, 720)}
                     />
                     <div className="card-content">
                       <h2 className="card-title">{post.title}</h2>

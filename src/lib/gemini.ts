@@ -32,6 +32,11 @@ CRITICAL CONSTRAINTS:
 
 6. IMAGE PROMPT ENGINEERING — 'image_prompts' MUST be an array of EXACTLY 5 prompts. These are sent to an AI image generator (Flux model). Follow these rules precisely:
 
+7. 'tags' MUST be exactly 3–5 tags — the most specific, distinctive ones for
+   this particular superstition (e.g. the specific ritual/belief name), not
+   generic category labels. Avoid near-duplicates like using both "Indian
+   Folklore" and "Indian Traditions" in the same post.
+
    STORY ARC (5 shots):
    - Shot 1 (ESTABLISHING): Wide cinematic landscape or interior establishing the Indian setting. Golden hour or dramatic lighting. Show the environment where the superstition takes place.
    - Shot 2 (CHARACTER): Close-up or medium shot of an Indian person (specific age, clothing, expression) performing or encountering the superstition ritual.
@@ -41,6 +46,7 @@ CRITICAL CONSTRAINTS:
 
    PROMPT QUALITY RULES:
    - Each prompt must be 30-60 words, highly specific and CONCRETE — describe exactly what is happening, who is doing it, and with what object, before anything else.
+   - CRITICAL: Every single shot (even the supernatural/resolution ones) MUST explicitly name the specific ritual object or action to prevent the AI from drifting into generic atmospheric scenes.
    - Do NOT include art-style or medium keywords (no "photography," "cinematic," "film," "illustration," etc.) — a consistent illustration style is applied automatically downstream. Focus every word budget on subject, action, setting, and composition instead.
    - Specify: camera framing/angle, time of day, specific Indian setting (village courtyard, temple threshold, kitchen doorway, etc.), and the exact gesture or object central to the ritual.
    - Specify emotional tone in plain terms: "ominous," "reverent," "serene," "mysterious," "sacred"
