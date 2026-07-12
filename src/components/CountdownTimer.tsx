@@ -6,11 +6,12 @@ function HourglassIcon() {
   return (
     <svg width="13" height="13" viewBox="0 0 24 24" aria-hidden="true" style={{ opacity: 0.65, flexShrink: 0 }}>
       <path
-        d="M6 2h12M6 22h12M6 2c0 6 12 6 12 12S6 16 6 22M18 2c0 6-12 6-12 12S18 16 18 22"
+        d="M5 22h14M5 2h14M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"
         stroke="var(--text-secondary)"
         strokeWidth="1.2"
         fill="none"
         strokeLinecap="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
