@@ -95,7 +95,7 @@ export default function CommentSection({ slug }: { slug: string }) {
         aria-expanded={isOpen}
       >
         <h3 className="comment-title" style={{ margin: 0 }}>
-          Mystical Whispers {comments.length > 0 && `(${comments.length})`}
+          Ask the Spirits {comments.length > 0 && `(${comments.length})`}
         </h3>
         <span className="toggle-icon" style={{ fontSize: '1.2rem', color: 'var(--accent-color)' }}>
           {isOpen ? '▲' : '▼'}
@@ -123,7 +123,7 @@ export default function CommentSection({ slug }: { slug: string }) {
             </div>
             <div className="form-group">
               <textarea 
-                placeholder="Share your thoughts... Tip: Start with /question to ask the AI Narrator!" 
+                placeholder="Ask the AI Narrator a question about this post..." 
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 required
@@ -132,15 +132,15 @@ export default function CommentSection({ slug }: { slug: string }) {
               />
             </div>
             <button type="submit" disabled={loading} className="comment-submit">
-              {loading ? 'Consulting the spirits...' : 'Post Comment'}
+              {loading ? 'Consulting the spirits...' : 'Ask Question'}
             </button>
           </form>
 
           <div className="comment-list">
             {fetching ? (
-              <p className="comment-loading">Summoning past whispers...</p>
+              <p className="comment-loading">Summoning past questions...</p>
             ) : comments.length === 0 ? (
-              <p className="comment-empty">Be the first to leave a whisper.</p>
+              <p className="comment-empty">Be the first to ask a question.</p>
             ) : (
               reversedComments.map((comment) => (
                 <div key={comment.id} className="comment-card">

@@ -87,20 +87,12 @@ export async function POST(request: Request) {
     createdAt: new Date().toISOString(),
   };
 
-  // AI Question check
-  if (sanitizedText.toLowerCase().startsWith('/question')) {
-    const questionText = sanitizedText.substring('/question'.length).trim();
-    if (!questionText) {
-      newComment.aiReply = "The spirits need a specific question to answer. Please ask something after '/question'.";
-    } else {
-      // Get the post to give context to Gemini
-      const post = getPostBySlug(slug);
-      const postContext = post ? `${post.title}\n\n${post.blog_html}` : 'No context available';
-      
-      const aiAnswer = await answerQuestion(postContext, questionText);
-      newComment.aiReply = aiAnswer;
-    }
-  }
+  // Always answer the user's question
+  const post = getPostBySlug(slug);
+  const postContext = post ? `${post.title}\n\n${post.blog_html}` : 'No context available';
+  
+  const aiAnswer = await answerQuestion(postContext, sanitizedText);
+  newComment.aiReply = aiAnswer;
 
   comments.push(newComment);
   await fsPromises.writeFile(filePath, JSON.stringify(comments, null, 2));
