@@ -56,7 +56,11 @@ async function generateDaily() {
         console.log(`Waiting 10s before downloading image ${i+1} to respect Pollinations rate limits...`);
         await new Promise(resolve => setTimeout(resolve, 10000));
         
-        const response = await fetch(imageUrl);
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 15000);
+        const response = await fetch(imageUrl, { signal: controller.signal });
+        clearTimeout(timeoutId);
+        
         if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
         
         const buffer = await response.arrayBuffer();

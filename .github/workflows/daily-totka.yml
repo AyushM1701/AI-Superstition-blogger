@@ -42,5 +42,5 @@ jobs:
             exit 0
           fi
           
-          git commit -m "feat: daily tona totka [skip ci]"
+          git commit -m "feat: daily tona totka"
           git push
