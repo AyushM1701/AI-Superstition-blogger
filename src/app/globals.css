@@ -392,7 +392,7 @@ a { color: inherit; text-decoration: none; }
 .mystical-divider {
   width: 100%;
   height: 1px;
-  background: var(--card-border);
+  background: linear-gradient(90deg, var(--card-border) 0%, var(--card-border) calc(50% - 45px), transparent calc(50% - 45px), transparent calc(50% + 45px), var(--card-border) calc(50% + 45px), var(--card-border) 100%);
   margin: 4rem 0;
   position: relative;
 }
@@ -401,8 +401,6 @@ a { color: inherit; text-decoration: none; }
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background: var(--bg);
-  padding: 0 1rem;
 }
 
 /* Twinkling Star Animation */
