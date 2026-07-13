@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Marcellus, Cormorant, Rajdhani } from 'next/font/google';
 import "./globals.css";
 import StarfieldBackground from "../components/StarfieldBackground";
+import ParallaxStars from "../components/ParallaxStars";
 import ReadingProgressBar from "../components/ReadingProgressBar";
 
 export const metadata: Metadata = {
@@ -51,6 +52,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${marcellus.variable} ${cormorant.variable} ${rajdhani.variable}`}>
+        <ParallaxStars />
         <StarfieldBackground />
         <ReadingProgressBar />
         {children}
