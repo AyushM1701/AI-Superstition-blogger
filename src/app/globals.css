@@ -1,7 +1,7 @@
 :root {
   --bg: #070a17;
   --bg-2: #0e1226;
-  --card-bg: #121736;
+  --card-bg: rgba(18, 23, 54, 0.75);
   --text-primary: #e6e6ef;
   --text-secondary: #b3b7cc;
   --accent: #d7c17a;
@@ -178,7 +178,6 @@ body {
 .single-layout { display: flex; flex-direction: column; gap: 2rem; margin-bottom: 4rem; }
 
 .split-blog {
-  background: var(--card-bg);
   padding: 3.5rem;
   border-radius: 8px;
   border: 1px solid var(--card-border);
@@ -207,6 +206,8 @@ a { color: inherit; text-decoration: none; }
 
 .video-card {
   background: var(--card-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid var(--card-border);
   border-radius: 8px;
   overflow: hidden;
@@ -602,6 +603,8 @@ a { color: inherit; text-decoration: none; }
   overflow: hidden;
   border-radius: 16px;
   background: var(--card-bg);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border: 1px solid transparent;
   background-clip: padding-box;
   box-shadow:
