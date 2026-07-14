@@ -289,16 +289,30 @@ a { color: inherit; text-decoration: none; }
 @keyframes pulse { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.8; } }
 
 @media (max-width: 768px) {
-  .container { padding: 1rem; }
+  .container { padding: 0.75rem; }
   .header h1 { font-size: 2.25rem; }
-  .header p { font-size: 1rem; }
+  .header p { font-size: 1rem; padding: 0 1rem; }
   .video-grid { grid-template-columns: 1fr; gap: 1.25rem; }
-  .detail-container { padding: 1rem; }
+  .detail-container { padding: 0.75rem; }
   .detail-title { font-size: 1.75rem; }
   .detail-meta { flex-direction: column; align-items: flex-start; gap: 0.75rem; }
-  .blog-content { font-size: 1rem; }
-  .blog-content h2 { font-size: 1.5rem; }
-  .blog-content h3 { font-size: 1.25rem; }
+  
+  /* Drastically reduce stacked padding for mobile reading */
+  .single-layout.featured-card { padding: 1.25rem 0.5rem; border-radius: 12px; }
+  .split-blog { padding: 0.25rem; border: none; }
+  .blog-content { 
+    font-size: 1.05rem; 
+    padding: 1.5rem 1rem; 
+    margin: 1rem auto;
+    border: none;
+    background: transparent;
+  }
+  .blog-content::before, .blog-content::after { display: none; } /* Remove corner ticks on mobile to maximize horizontal space */
+  
+  .blog-content h2 { font-size: 1.5rem; margin-top: 2rem; }
+  .blog-content h3 { font-size: 1.25rem; margin-top: 1.75rem; }
+  
+  .comment-section { padding: 1.5rem 1rem; }
 }
 
 @media (max-width: 480px) {
