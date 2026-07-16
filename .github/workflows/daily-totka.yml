@@ -44,3 +44,7 @@ jobs:
           
           git commit -m "feat: daily tona totka"
           git push
+
+      - name: Trigger Vercel Deployment
+        if: success()
+        run: curl -X POST ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
