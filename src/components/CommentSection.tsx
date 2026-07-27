@@ -24,7 +24,23 @@ function parseLightMarkdown(text: string) {
   let html = escapeHtml(text);
   html = html.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>'); // bold
   html = html.replace(/\*(.*?)\*/g, '<em>$1</em>'); // italics
+  html = html.replace(/\n/g, '<br>'); // newlines
   return html;
+}
+
+function CommentDate({ dateString }: { dateString: string }) {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return <span className="comment-date" style={{ opacity: 0 }}>...</span>;
+  return (
+    <span className="comment-date">
+      {new Date(dateString).toLocaleDateString()}
+    </span>
+  );
 }
 
 export default function CommentSection({ slug }: { slug: string }) {
@@ -116,16 +132,18 @@ export default function CommentSection({ slug }: { slug: string }) {
                 value={author}
                 onChange={(e) => setAuthor(e.target.value)}
                 required
+                maxLength={60}
                 className="comment-input"
               />
             </div>
             <div className="form-group">
               <textarea 
-                placeholder="Ask the AI Narrator a question about this post..." 
+                placeholder="Ask a question about this superstition..." 
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 required
                 rows={4}
+                maxLength={600}
                 className="comment-textarea"
               />
             </div>
@@ -144,15 +162,13 @@ export default function CommentSection({ slug }: { slug: string }) {
                 <div key={comment.id} className="comment-card">
                   <div className="comment-header">
                     <strong>{comment.author}</strong>
-                    <span className="comment-date">
-                      {new Date(comment.createdAt).toLocaleDateString()}
-                    </span>
+                    <CommentDate dateString={comment.createdAt} />
                   </div>
                   <p className="comment-text">{comment.text}</p>
                   
                   {comment.aiReply && (
                     <div className="ai-reply">
-                      <div className="ai-reply-header">✨ The Narrator Answers:</div>
+                      <div className="ai-reply-header">✨ The Spirits Answer:</div>
                       <p 
                         className="ai-reply-text" 
                         dangerouslySetInnerHTML={{ __html: parseLightMarkdown(comment.aiReply) }} 

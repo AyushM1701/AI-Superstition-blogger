@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { SITE_URL } from '../lib/config';
 
 interface ShareButtonsProps {
   title: string;
@@ -9,8 +10,7 @@ interface ShareButtonsProps {
 
 export default function ShareButtons({ title, slug }: ShareButtonsProps) {
   const [copied, setCopied] = useState(false);
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-superstition-blogger-4nnb.vercel.app';
-  const postUrl = `${siteUrl}/${slug}`;
+  const postUrl = `${SITE_URL}/${slug}`;
   const encodedTitle = encodeURIComponent(title);
   const encodedUrl = encodeURIComponent(postUrl);
 

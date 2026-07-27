@@ -32,27 +32,36 @@ export default function SmartArchive({ posts }: { posts: ArchivePost[] }) {
 
   return (
     <section>
-      <h2 className="section-title">📖 Smart Archive</h2>
+      <h2 className="section-title" style={{ fontFamily: 'var(--font-display)', letterSpacing: '0.05em' }}>EXPLORE THE LORE</h2>
       <ArchiveGrid>
-        {visiblePosts.map((post) => (
-          <Link href={`/${post.slug}`} key={post.slug} className="video-card">
-            <FallbackImage
-              src={post.image_urls?.[0] || getThumbnailUrl(post.image_prompts?.[0] || post.title)}
-              alt={post.title}
-              className="thumbnail-image"
-              loading="lazy"
-              fallbackSrc={buildPollinationsImageUrl('dark starry night sky constellations astrology', 1280, 720)}
-            />
-            <div className="card-content">
-              <h2 className="card-title">{post.title}</h2>
-              <div className="tags">
-                {post.tags && post.tags.slice(0, 3).map((tag: string) => (
-                  <span key={tag} className="tag">{tag}</span>
-                ))}
+        {visiblePosts.map((post) => {
+          const ratingStars = (post.title.length % 3) + 3; // 3 to 5 stars
+          const starsStr = '✦'.repeat(ratingStars) + '✧'.repeat(5 - ratingStars);
+          return (
+            <Link href={`/${post.slug}`} key={post.slug} className="video-card">
+              <FallbackImage
+                src={post.image_urls?.[0] || getThumbnailUrl(post.image_prompts?.[0] || post.title)}
+                alt={post.title}
+                className="thumbnail-image"
+                loading="lazy"
+                fallbackSrc={buildPollinationsImageUrl('dark starry night sky constellations astrology', 1280, 720)}
+              />
+              <div className="card-content">
+                <div className="hp-card-rating">
+                  <span>{starsStr}</span>
+                  <span style={{ opacity: 0.3 }}>•</span>
+                  <span>LORE INDEX</span>
+                </div>
+                <h2 className="card-title" style={{ fontFamily: 'var(--font-head)', fontSize: '1.2rem', fontWeight: 'bold' }}>{post.title}</h2>
+                <div className="tags">
+                  {post.tags && post.tags.slice(0, 3).map((tag: string) => (
+                    <span key={tag} className="tag">{tag}</span>
+                  ))}
+                </div>
               </div>
-            </div>
-          </Link>
-        ))}
+            </Link>
+          );
+        })}
       </ArchiveGrid>
 
       {hasMore && (
@@ -62,13 +71,15 @@ export default function SmartArchive({ posts }: { posts: ArchivePost[] }) {
             className="show-more-button"
             style={{
               background: 'transparent',
-              border: '1px solid var(--accent)',
+              border: '1.5px solid var(--accent)',
               color: 'var(--accent)',
-              padding: '0.75rem 2rem',
-              borderRadius: '999px',
-              fontFamily: 'var(--font-head)',
+              padding: '0.75rem 2.2rem',
+              borderRadius: '3px',
+              fontFamily: 'var(--font-body)',
               textTransform: 'uppercase',
-              letterSpacing: '1px',
+              letterSpacing: '0.15em',
+              fontSize: '0.8rem',
+              fontWeight: '600',
               cursor: 'pointer',
               transition: 'all 0.3s ease',
               display: 'flex',
@@ -76,11 +87,13 @@ export default function SmartArchive({ posts }: { posts: ArchivePost[] }) {
               gap: '0.5rem'
             }}
             onMouseOver={(e) => {
-              e.currentTarget.style.background = 'rgba(212, 175, 100, 0.1)';
-              e.currentTarget.style.boxShadow = '0 0 15px rgba(212, 175, 100, 0.2)';
+              e.currentTarget.style.background = 'var(--accent)';
+              e.currentTarget.style.color = 'var(--bg)';
+              e.currentTarget.style.boxShadow = '0 0 15px rgba(223, 177, 91, 0.35)';
             }}
             onMouseOut={(e) => {
               e.currentTarget.style.background = 'transparent';
+              e.currentTarget.style.color = 'var(--accent)';
               e.currentTarget.style.boxShadow = 'none';
             }}
           >

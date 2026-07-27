@@ -7,6 +7,7 @@ import { buildPollinationsImageUrl } from '../../lib/image-style';
 import ReelsPlayer from '../../components/ReelsPlayer';
 import ShareButtons from '../../components/ShareButtons';
 import CommentSection from '../../components/CommentSection';
+import { SITE_URL } from '../../lib/config';
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -28,7 +29,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   const desc = post.script.length > 150 ? post.script.substring(0, 150) + '...' : post.script;
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-superstition-blogger-4nnb.vercel.app';
+  const baseUrl = SITE_URL;
   
   // Default to Pollinations URL if we don't have local static images yet
   let ogImage = buildPollinationsImageUrl(post.title, 1200, 630);
@@ -146,8 +147,17 @@ export default async function PostPage({ params }: Props) {
       )}
 
       <footer className="site-footer">
-        <p>🔮 <strong>TONA TOTKA.COM</strong> — AI-powered Indian folklore & superstitions.</p>
-        <p>New stories generated daily by artificial intelligence.</p>
+        <p>
+          <svg width="16" height="16" viewBox="0 0 100 100" aria-hidden="true" style={{ display: 'inline-block', verticalAlign: 'middle', marginRight: '6px' }}>
+            <path d="M20 40 L50 20 L80 60" fill="none" stroke="var(--accent)" strokeWidth="1.5" />
+            <circle cx="20" cy="40" r="1.5" fill="var(--accent)" />
+            <circle cx="50" cy="20" r="2.5" fill="var(--accent)" />
+            <circle cx="80" cy="60" r="1.5" fill="var(--accent)" />
+          </svg>
+          <strong style={{ color: 'var(--accent)', fontWeight: 'normal', fontFamily: 'var(--font-display)' }}>TONA TOTKA.COM</strong> — Indian folklore & superstitions.
+        </p>
+        <p>Uncovering the ancient mysteries, rituals, and folklore of India.</p>
+        <p style={{ marginTop: '1rem', opacity: 0.5, fontSize: '0.75rem' }}>© {new Date().getFullYear()} VK Enterprises</p>
       </footer>
     </main>
   );

@@ -45,6 +45,7 @@ export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, script,
   }, [script]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setAudioDuration(null);
     const audio = audioRef.current;
     if (!audio) return;
@@ -54,6 +55,13 @@ export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, script,
     if (audio.duration && isFinite(audio.duration)) setAudioDuration(audio.duration);
     audio.addEventListener('loadedmetadata', handleLoadedMetadata);
     return () => audio.removeEventListener('loadedmetadata', handleLoadedMetadata);
+  }, [audioUrl]);
+
+  // Reset fallback timer state whenever the post/audioUrl changes
+  useEffect(() => {
+    fallbackElapsedRef.current = 0;
+    fallbackStartRef.current = null;
+    if (fallbackRafRef.current) cancelAnimationFrame(fallbackRafRef.current);
   }, [audioUrl]);
 
   const stopPlayback = useCallback(() => {

@@ -1,9 +1,10 @@
 import { getAllPosts } from '../../lib/posts';
 import { buildPollinationsImageUrl } from '../../lib/image-style';
+import { SITE_URL } from '../../lib/config';
 
 export async function GET() {
   const posts = getAllPosts();
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-superstition-blogger-4nnb.vercel.app';
+  const baseUrl = SITE_URL;
 
   const feed = `<?xml version="1.0" encoding="utf-8"?>
   <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">

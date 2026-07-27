@@ -11,6 +11,7 @@ export default function FallbackImage({ src, fallbackSrc, ...props }: FallbackIm
   return (
     <img 
       src={src} 
+      alt={props.alt || ""}
       {...props} 
       onError={(e) => {
         const target = e.target as HTMLImageElement;

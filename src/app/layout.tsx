@@ -4,6 +4,9 @@ import "./globals.css";
 import StarfieldBackground from "../components/StarfieldBackground";
 import ParallaxStars from "../components/ParallaxStars";
 import ReadingProgressBar from "../components/ReadingProgressBar";
+import Header from "../components/Header";
+import { SITE_URL } from '../lib/config';
+import { buildPollinationsImageUrl } from '../lib/image-style';
 
 export const metadata: Metadata = {
   title: "TONA TOTKA.COM",
@@ -11,11 +14,11 @@ export const metadata: Metadata = {
   openGraph: {
     title: "TONA TOTKA.COM",
     description: "Uncover the world's most fascinating Indian superstitions, myths, and folklore.",
-    url: process.env.NEXT_PUBLIC_SITE_URL || 'https://ai-superstition-blogger-4nnb.vercel.app',
+    url: SITE_URL,
     siteName: "TONA TOTKA.COM",
     images: [
       {
-        url: "https://image.pollinations.ai/prompt/Indian%20superstition%20mystery%20dark%20magic%20cinematic%208k?width=1200&height=630&nologo=true",
+        url: buildPollinationsImageUrl('Indian superstition mystery dark magic ancient ritual', 1200, 630),
         width: 1200,
         height: 630,
       }
@@ -55,6 +58,7 @@ export default function RootLayout({
         <ParallaxStars />
         <StarfieldBackground />
         <ReadingProgressBar />
+        <Header />
         {children}
       </body>
     </html>

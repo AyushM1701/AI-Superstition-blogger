@@ -22,9 +22,9 @@ async function generateDaily() {
     console.log('🎙️ 2. Fetching TTS Audio...');
     const audioBuffer = await generateAudio(content.script);
     
-    // Setup paths
-    const today = new Date();
-    const dateStr = today.toISOString().split('T')[0];
+    // Capture the current time once so dateStr and created_at are always consistent
+    const now = new Date();
+    const dateStr = now.toISOString().split('T')[0];
     const baseSlug = content.title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
     const slug = `${dateStr}-${baseSlug}`;
 
@@ -82,7 +82,7 @@ async function generateDaily() {
 
     const postPayload = {
       ...content,
-      created_at: new Date().toISOString(),
+      created_at: now.toISOString(),
       audio_url: audioUrl,
       image_urls: imageUrls
     };

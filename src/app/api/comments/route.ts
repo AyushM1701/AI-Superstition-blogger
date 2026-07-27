@@ -14,8 +14,35 @@ interface Comment {
   aiReply?: string;
 }
 
-const COMMENTS_DIR = process.env.VERCEL 
-  ? path.join('/tmp', 'comments') 
+// ── Slug safety ──────────────────────────────────────────────────────────────
+// Only allow the same character set used when generating slugs in generate-daily.ts
+const VALID_SLUG = /^[a-z0-9-]+$/;
+
+// ── Simple in-process rate limiter ───────────────────────────────────────────
+// Limits each IP to MAX_POSTS_PER_WINDOW requests per WINDOW_MS.
+// NOTE: This resets on cold-start. For a production-grade solution use Vercel KV.
+const WINDOW_MS = 60_000; // 1 minute
+const MAX_POSTS_PER_WINDOW = 3;
+const rateLimitMap = new Map<string, { count: number; resetAt: number }>();
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const entry = rateLimitMap.get(ip);
+  if (!entry || now > entry.resetAt) {
+    rateLimitMap.set(ip, { count: 1, resetAt: now + WINDOW_MS });
+    return false;
+  }
+  if (entry.count >= MAX_POSTS_PER_WINDOW) return true;
+  entry.count++;
+  return false;
+}
+
+// ── Input limits ─────────────────────────────────────────────────────────────
+const MAX_AUTHOR_LEN = 60;
+const MAX_TEXT_LEN = 600;
+
+const COMMENTS_DIR = process.env.VERCEL
+  ? path.join('/tmp', 'comments')
   : path.join(process.cwd(), 'data/comments');
 
 // Helper to get path
@@ -34,8 +61,8 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const slug = searchParams.get('slug');
 
-  if (!slug) {
-    return NextResponse.json({ error: 'Slug is required' }, { status: 400 });
+  if (!slug || !VALID_SLUG.test(slug)) {
+    return NextResponse.json({ error: 'Invalid slug' }, { status: 400 });
   }
 
   const filePath = getCommentsPath(slug);
@@ -52,6 +79,19 @@ export async function GET(request: Request) {
 }
 
 export async function POST(request: Request) {
+  // ── Rate limiting ──────────────────────────────────────────────────────────
+  const ip =
+    request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    request.headers.get('x-real-ip') ||
+    'unknown';
+
+  if (isRateLimited(ip)) {
+    return NextResponse.json(
+      { error: 'Too many requests. Please wait a moment before asking again.' },
+      { status: 429 }
+    );
+  }
+
   const body = await request.json();
   const { slug, author, text } = body;
 
@@ -59,8 +99,21 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Missing required fields' }, { status: 400 });
   }
 
+  // ── Slug validation ────────────────────────────────────────────────────────
+  if (!VALID_SLUG.test(slug)) {
+    return NextResponse.json({ error: 'Invalid slug' }, { status: 400 });
+  }
+
+  // ── Input length limits ────────────────────────────────────────────────────
+  if (author.length > MAX_AUTHOR_LEN) {
+    return NextResponse.json({ error: `Name must be ${MAX_AUTHOR_LEN} characters or fewer.` }, { status: 400 });
+  }
+  if (text.length > MAX_TEXT_LEN) {
+    return NextResponse.json({ error: `Question must be ${MAX_TEXT_LEN} characters or fewer.` }, { status: 400 });
+  }
+
   // Sanitize user inputs to prevent any backend script injection
-  const sanitizedAuthor = sanitizeContent(author).replace(/<[^>]*>?/gm, '').trim(); 
+  const sanitizedAuthor = sanitizeContent(author).replace(/<[^>]*>?/gm, '').trim();
   const sanitizedText = sanitizeContent(text).replace(/<[^>]*>?/gm, '').trim();
 
   if (!sanitizedAuthor || !sanitizedText) {
@@ -69,7 +122,7 @@ export async function POST(request: Request) {
 
   await ensureCommentsDir();
   const filePath = getCommentsPath(slug);
-  
+
   let comments: Comment[] = [];
   if (fs.existsSync(filePath)) {
     try {
@@ -90,7 +143,7 @@ export async function POST(request: Request) {
   // Always answer the user's question
   const post = getPostBySlug(slug);
   const postContext = post ? `${post.title}\n\n${post.blog_html}` : 'No context available';
-  
+
   const aiAnswer = await answerQuestion(postContext, sanitizedText);
   newComment.aiReply = aiAnswer;
 

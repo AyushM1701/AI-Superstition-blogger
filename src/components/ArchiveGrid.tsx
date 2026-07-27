@@ -1,11 +1,15 @@
 'use client';
 
+import React from 'react';
 import Reveal from './Reveal';
 
-export default function ArchiveGrid({ children }: { children: React.ReactNode[] }) {
+export default function ArchiveGrid({ children }: { children: React.ReactNode }) {
+  // React.Children.toArray handles single child, multiple children, and fragments safely
+  const childArray = React.Children.toArray(children);
+
   return (
     <div className="video-grid">
-      {children.map((child, index) => (
+      {childArray.map((child, index) => (
         <Reveal
           key={index}
           className="archive-card-wrapper is-visible"
