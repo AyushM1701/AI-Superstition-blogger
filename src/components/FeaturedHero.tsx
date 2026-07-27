@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ReelsPlayer from './ReelsPlayer';
+import CountdownTimer from './CountdownTimer';
 
 interface ArchivePost {
   slug: string;
@@ -84,7 +85,7 @@ export default function FeaturedHero({ post, readingTime }: { post: ArchivePost;
 
         {/* Center Hero Content */}
         <div className="hp-hero-content">
-          <span className="hp-featured-eyebrow">Tona Totka of the Day</span>
+          <span id="daily-totka" className="hp-featured-eyebrow">Tona Totka of the Day</span>
           <h1 className="hp-featured-title">{post.title}</h1>
           <p className="hp-featured-desc">{post.script}</p>
 
@@ -102,6 +103,8 @@ export default function FeaturedHero({ post, readingTime }: { post: ArchivePost;
               Listen Narration
             </button>
           </div>
+
+          <CountdownTimer />
         </div>
       </section>
 

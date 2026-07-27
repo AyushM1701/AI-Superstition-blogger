@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import OrionMark from './OrionMark';
 
 export default function Header() {
@@ -11,9 +12,9 @@ export default function Header() {
   };
 
   const navLinks = [
-    { name: 'Daily Totka', href: '#daily' },
-    { name: 'Superstition Archive', href: '#archive' },
-    { name: 'Comment Discussion', href: '#comments' },
+    { name: 'Daily Totka', href: '/#daily-totka' },
+    { name: 'Superstition Archive', href: '/#archive' },
+    { name: 'Ask the spirits', href: '/#comments' },
   ];
 
   return (
@@ -32,11 +33,10 @@ export default function Header() {
           </button>
           
           <div className="hp-logo-container">
-            {/* eslint-disable-next-line @next/next/no-html-link-for-pages */}
-            <a href="/" className="hp-logo-link">
+            <Link href="/" className="hp-logo-link">
               <OrionMark width={24} height={34} strokeOpacity={0.8} />
               <span className="hp-logo-text">TONA TOTKA</span>
-            </a>
+            </Link>
           </div>
 
           <div style={{ width: '40px' }} aria-hidden="true" />
@@ -46,9 +46,9 @@ export default function Header() {
           <ul className="hp-nav-list">
             {navLinks.map((link) => (
               <li key={link.name} className="hp-nav-item">
-                <a href={link.href} className="hp-nav-link">
+                <Link href={link.href} className="hp-nav-link">
                   {link.name}
-                </a>
+                </Link>
               </li>
             ))}
           </ul>
@@ -68,9 +68,9 @@ export default function Header() {
         <ul className="hp-mobile-nav-list">
           {navLinks.map((link) => (
             <li key={link.name} className="hp-mobile-nav-item">
-              <a href={link.href} className="hp-mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
+              <Link href={link.href} className="hp-mobile-nav-link" onClick={() => setMobileMenuOpen(false)}>
                 {link.name}
-              </a>
+              </Link>
             </li>
           ))}
         </ul>

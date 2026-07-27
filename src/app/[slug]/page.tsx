@@ -67,7 +67,7 @@ export default async function PostPage({ params }: Props) {
   return (
     <main className="detail-container">
       <Link href="/" className="back-link">
-        ← Back to Archive
+        ← Back to Home Page
       </Link>
       
       <article>
