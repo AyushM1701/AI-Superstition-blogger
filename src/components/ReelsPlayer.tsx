@@ -198,7 +198,11 @@ export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, script,
                   animationPlayState: isActive && isPlaying ? 'running' : 'paused',
                 }}
                 onError={(e) => {
-                  (e.target as HTMLImageElement).src = buildPollinationsImageUrl('dark starry night sky constellations astrology', 1920, 1080);
+                  const target = e.target as HTMLImageElement;
+                  const fallbackUrl = buildPollinationsImageUrl('dark starry night sky constellations astrology', 1920, 1080);
+                  if (target.src !== fallbackUrl) {
+                    target.src = fallbackUrl;
+                  }
                 }}
               />
             </div>
