@@ -189,7 +189,6 @@ export default function ReelsPlayer({ imagePrompts, imageUrls, audioUrl, script,
             >
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                key={isActive ? `active-${index}` : `idle-${index}`}
                 src={src}
                 alt={`Scene ${index + 1}`}
                 className={isActive ? getKbEffect(index) : ''}

@@ -50,7 +50,8 @@ async function generateDaily() {
     for (let i = 0; i < content.image_prompts.length; i++) {
       const prompt = content.image_prompts[i];
       // Add the Alchemist's Terminal style modifiers to get woodcut ink sketches
-      const imageUrl = buildPollinationsImageUrl(prompt, 1920, 1080);
+      const seed = Math.floor(Math.random() * 1000000000);
+      const imageUrl = buildPollinationsImageUrl(prompt, 1920, 1080) + `&seed=${seed}`;
       
       try {
         console.log(`Waiting 10s before downloading image ${i+1} to respect Pollinations rate limits...`);
