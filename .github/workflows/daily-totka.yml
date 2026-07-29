@@ -36,3 +36,12 @@ jobs:
           git add data/posts/ public/images/ public/audio/
           git commit -m "Automated daily totka generation" || echo "No changes to commit"
           git push
+
+      - name: Trigger Vercel Deploy
+        if: success()
+        run: |
+          if [ -n "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}" ]; then
+            curl -X POST "${{ secrets.VERCEL_DEPLOY_HOOK_URL }}"
+          else
+            echo "VERCEL_DEPLOY_HOOK_URL secret is not set, skipping manual deploy trigger."
+          fi
